@@ -1,460 +1,695 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Media Watchlist</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- FontAwesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <style>
-    body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    /* Left Navigation Sidebar */
-    .sidebar {
-      width: 250px;
-      height: 100vh;
-      position: fixed;
-      background-color: #1e1e1e;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    .sidebar h3 {
-      color: #fff;
-      margin-bottom: 1rem;
-    }
-    .nav-link {
-      color: #bbb;
-      padding: 10px;
-      margin-bottom: 10px;
-      text-decoration: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .nav-link:hover, .nav-link.active {
-      background-color: #333;
-      color: #fff;
-    }
-    /* Main Content Area */
-    .content {
-      margin-left: 270px;
-      padding: 20px;
-    }
-    .tab {
-      display: none;
-    }
-    .tab.active-tab {
-      display: block;
-    }
-    /* Search Input Group */
-    .search-group {
-      max-width: 350px;
-      margin-bottom: 1rem;
-    }
-    /* Media Cards */
-    .media-card {
-      background-color: #222;
-      border: none;
-      border-radius: 5px;
-      margin-bottom: 1rem;
-      overflow: hidden;
-    }
-    .media-card img {
-      width: 80px;
-      height: 120px;
-      object-fit: cover;
-    }
-    .media-card .card-body {
-      padding: 0.5rem;
-    }
-    /* Profile Card */
-    .profile-card {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 400px;
-      margin: auto;
-      text-align: center;
-    }
-    .profile-card img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 2px solid #444;
-    }
-    /* Star Rating Modal */
-    .star-rating i {
-      font-size: 1.5rem;
-      color: #ccc;
-      cursor: pointer;
-    }
-    .star-rating i.selected {
-      color: gold;
-    }
-  </style>
-</head>
-<body>
-  <!-- Left Navigation Sidebar -->
-  <div class="sidebar">
-    <h3>Watchlist App</h3>
-    <a class="nav-link active" data-tab="watchlist">Watchlist</a>
-    <a class="nav-link" data-tab="watched">Watched</a>
-    <a class="nav-link" data-tab="profile">Profile</a>
-  </div>
-
-  <!-- Main Content -->
-  <div class="content">
-    <!-- Watchlist Tab: Search + List -->
-    <div id="watchlist" class="tab active-tab">
-      <h2>Watchlist</h2>
-      <div class="search-group input-group">
-        <span class="input-group-text bg-dark text-light">
-          <i class="fas fa-search"></i>
-        </span>
-        <input type="text" id="searchQuery" class="form-control bg-dark text-light" placeholder="Search movies or series..." />
-      </div>
-      <div id="searchResults"></div>
-      <hr class="bg-secondary" />
-      <h4>Your Watchlist</h4>
-      <div id="watchlistContainer"></div>
-    </div>
-
-    <!-- Watched Tab -->
-    <div id="watched" class="tab">
-      <h2>Watched</h2>
-      <div id="watchedContainer"></div>
-    </div>
-
-    <!-- Profile Tab -->
-    <div id="profile" class="tab">
-      <h2>Profile</h2>
-      <div class="profile-card">
-        <img id="profileImage" src="https://via.placeholder.com/100" alt="Profile Image" />
-        <h3 id="profileName">Your Name</h3>
-        <button id="editProfileBtn" class="btn btn-secondary btn-sm mb-3">Edit Profile</button>
-        <div id="profileMetrics" class="mb-3"></div>
-        <!-- Edit Profile Form (hidden by default) -->
-        <div id="profileEditForm" style="display: none;" class="text-start">
-          <div class="mb-2">
-            <label for="editName" class="form-label">Name</label>
-            <input type="text" id="editName" class="form-control bg-dark text-light">
-          </div>
-          <div class="mb-2">
-            <label for="editImage" class="form-label">Profile Image</label>
-            <input type="file" id="editImage" accept="image/*" class="form-control bg-dark text-light">
-          </div>
-          <button id="saveProfileBtn" class="btn btn-primary btn-sm">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Star Rating Modal -->
-  <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content bg-dark text-light">
-        <div class="modal-header border-0">
-          <h5 class="modal-title" id="ratingModalLabel">Rate (out of 5 stars)</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-center">
-          <div id="starRating" class="star-rating">
-            <i class="fas fa-star" data-value="1"></i>
-            <i class="fas fa-star" data-value="2"></i>
-            <i class="fas fa-star" data-value="3"></i>
-            <i class="fas fa-star" data-value="4"></i>
-            <i class="fas fa-star" data-value="5"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bootstrap JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Main JavaScript -->
-  <script>
-    // IMPORTANT: Replace with your TMDB API key.
-    const TMDB_API_KEY = 'fa6ceab60f185619e0854acce9f0fcfd';
-
-    // Data storage using localStorage
-    let mediaList = JSON.parse(localStorage.getItem('mediaList')) || [];
-    let user = JSON.parse(localStorage.getItem('user')) || { name: 'Your Name', profileImage: '' };
-
-    function saveData() {
-      localStorage.setItem('mediaList', JSON.stringify(mediaList));
-      localStorage.setItem('user', JSON.stringify(user));
-    }
-
-    // Navigation: switch tabs
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', function() {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
-        const tab = this.getAttribute('data-tab');
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-tab'));
-        document.getElementById(tab).classList.add('active-tab');
-        if(tab === 'profile') updateProfileUI();
-      });
-    });
-
-    // Debounce helper
-    function debounce(func, delay) {
-      let timer;
-      return function(...args) {
-        clearTimeout(timer);
-        timer = setTimeout(() => func.apply(this, args), delay);
-      };
-    }
-
-    // TMDB search
-    async function performSearch(query) {
-      const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if(data.results) renderSearchResults(data.results);
-        else document.getElementById('searchResults').innerHTML = '<p>No results found.</p>';
-      } catch (error) {
-        console.error('Error:', error);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media Watchlist</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- FontAwesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Global light theme and tablet width container */
+      body {
+        background-color: #f8f9fa;
+        color: #212529;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
-    }
-
-    // Render search results (movies and tv only)
-    function renderSearchResults(results) {
-      const container = document.getElementById('searchResults');
-      container.innerHTML = '';
-      results.forEach(item => {
-        if(item.media_type !== 'movie' && item.media_type !== 'tv') return;
-        const title = item.media_type === 'movie' ? item.title : item.name;
-        const date = item.media_type === 'movie' ? item.release_date : item.first_air_date;
-        const year = date ? date.substring(0, 4) : 'N/A';
-        const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/80x120';
-
-        const card = document.createElement('div');
-        card.className = 'card media-card';
-        card.innerHTML = `
-          <div class="row g-0">
-            <div class="col-auto">
-              <img src="${posterUrl}" alt="${title}">
+      .main-container {
+        display: flex;
+        max-width: 768px;
+        margin: 0 auto;
+        border: 1px solid #dee2e6;
+        min-height: 100vh;
+      }
+      /* Sidebar (left navigation) */
+      .sidebar {
+        width: 200px;
+        background-color: #e9ecef;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+      }
+      .sidebar h3 {
+        color: #212529;
+        margin-bottom: 1rem;
+      }
+      .nav-link {
+        display: block;
+        color: #495057;
+        padding: 10px;
+        margin-bottom: 10px;
+        text-decoration: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        background-color: #ced4da;
+      }
+      /* Content area */
+      .content {
+        flex: 1;
+        padding: 20px;
+      }
+      .tab {
+        display: none;
+      }
+      .tab.active-tab {
+        display: block;
+      }
+      /* Search box */
+      .search-group {
+        max-width: 100%;
+        margin-bottom: 1rem;
+      }
+      /* Cards styling */
+      .media-card {
+        border: none;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+      }
+      .media-card img {
+        width: 80px;
+        height: 120px;
+        object-fit: cover;
+      }
+      .media-card .card-body {
+        padding: 0.5rem;
+      }
+      /* Details Modal image */
+      #detailsPoster {
+        width: 100%;
+        max-width: 300px;
+      }
+      /* Button right alignment */
+      .float-end {
+        float: right;
+      }
+      /* Profile Section */
+      .profile-card {
+        max-width: 100%;
+      }
+      #profileName.placeholder {
+        font-style: italic;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h3>Watchlist App</h3>
+        <a class="nav-link active" data-tab="search">Search</a>
+        <a class="nav-link" data-tab="watchlist">Watchlist</a>
+        <a class="nav-link" data-tab="watched">Watched</a>
+        <a class="nav-link" data-tab="profile">Profile</a>
+      </div>
+      <!-- Content -->
+      <div class="content">
+        <!-- Search Tab -->
+        <div id="search" class="tab active-tab">
+          <h2>Search Media</h2>
+          <div class="search-group input-group">
+            <span class="input-group-text">
+              <i class="fas fa-search"></i>
+            </span>
+            <input
+              type="text"
+              id="searchQuery"
+              class="form-control"
+              placeholder="Search movies or series..."
+            />
+          </div>
+          <div id="searchResults"></div>
+        </div>
+        <!-- Watchlist Tab -->
+        <div id="watchlist" class="tab">
+          <h2>Your Watchlist</h2>
+          <div id="watchlistContainer"></div>
+        </div>
+        <!-- Watched Tab -->
+        <div id="watched" class="tab">
+          <h2>Watched</h2>
+          <div id="watchedContainer"></div>
+        </div>
+        <!-- Profile Tab -->
+        <div id="profile" class="tab">
+          <h2>Your Profile</h2>
+          <div class="card p-3 mb-3 profile-card">
+            <img
+              id="profileImage"
+              src="https://via.placeholder.com/100"
+              alt="Profile Image"
+              class="rounded-circle mx-auto d-block mb-2"
+            />
+            <!-- Placeholder name: Guest User -->
+            <h3 id="profileName" class="text-center placeholder">Guest User</h3>
+            <div class="text-center mb-3" id="profileMetrics"></div>
+            <div class="text-end">
+              <button id="editProfileBtn" class="btn btn-secondary btn-sm">
+                Edit Profile
+              </button>
             </div>
-            <div class="col">
-              <div class="card-body p-2">
-                <h6 class="card-title mb-1">${title}</h6>
-                <p class="card-text"><small>${year}</small></p>
-                <button class="btn btn-sm btn-primary add-btn"
-                  data-id="${item.id}"
-                  data-media-type="${item.media_type}"
-                  data-title="${encodeURIComponent(title)}"
-                  data-date="${date}"
-                  data-poster="${posterUrl}">
-                  Add
+            <!-- Edit Profile Form (hidden by default) -->
+            <div id="profileEditForm" style="display: none;" class="mt-3">
+              <div class="mb-2">
+                <label for="editName" class="form-label">Name</label>
+                <input type="text" id="editName" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label for="editImage" class="form-label">Profile Image</label>
+                <input
+                  type="file"
+                  id="editImage"
+                  accept="image/*"
+                  class="form-control"
+                />
+              </div>
+              <div class="text-end">
+                <button id="saveProfileBtn" class="btn btn-primary btn-sm">
+                  Save
                 </button>
               </div>
             </div>
           </div>
-        `;
-        container.appendChild(card);
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Modal for Search Item -->
+    <div
+      class="modal fade"
+      id="detailsModal"
+      tabindex="-1"
+      aria-labelledby="detailsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="detailsModalLabel"></h5>
+            <button
+              type="button"
+              class="btn btn-outline-primary btn-sm float-end me-2"
+              id="addToWatchlistBtn"
+            >
+              Add to Watchlist
+            </button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <img
+                  id="detailsPoster"
+                  src=""
+                  alt=""
+                  class="img-fluid rounded"
+                />
+              </div>
+              <div class="col-md-8">
+                <p id="detailsOverview"></p>
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <strong>Release Date:</strong>
+                    <span id="detailsDate"></span>
+                  </li>
+                  <li class="list-group-item">
+                    <strong>Rating:</strong>
+                    <span id="detailsRating"></span>
+                  </li>
+                  <li class="list-group-item" id="detailsGenres"></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating Modal (for marking as watched) -->
+    <div
+      class="modal fade"
+      id="ratingModal"
+      tabindex="-1"
+      aria-labelledby="ratingModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ratingModalLabel">
+              Rate (out of 5 stars)
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center">
+            <div id="starRating" class="star-rating">
+              <i class="fas fa-star" data-value="1"></i>
+              <i class="fas fa-star" data-value="2"></i>
+              <i class="fas fa-star" data-value="3"></i>
+              <i class="fas fa-star" data-value="4"></i>
+              <i class="fas fa-star" data-value="5"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+      // IMPORTANT: Replace with your TMDB API key.
+      const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
+
+      // Data storage using localStorage
+      let mediaList =
+        JSON.parse(localStorage.getItem("mediaList")) || [];
+      let user =
+        JSON.parse(localStorage.getItem("user")) || {
+          name: "Guest User",
+          profileImage: ""
+        };
+
+      // Save data
+      function saveData() {
+        localStorage.setItem("mediaList", JSON.stringify(mediaList));
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      // Navigation: switch tabs
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.addEventListener("click", function () {
+          document
+            .querySelectorAll(".nav-link")
+            .forEach((l) => l.classList.remove("active"));
+          this.classList.add("active");
+          const tab = this.getAttribute("data-tab");
+          document
+            .querySelectorAll(".tab")
+            .forEach((t) => t.classList.remove("active-tab"));
+          document.getElementById(tab).classList.add("active-tab");
+          if (tab === "profile") updateProfileUI();
+        });
       });
 
-      // Attach event listeners for add buttons
-      document.querySelectorAll('.add-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const id = this.getAttribute('data-id');
-          const mediaType = this.getAttribute('data-media-type');
-          const title = decodeURIComponent(this.getAttribute('data-title'));
-          const date = this.getAttribute('data-date');
-          const poster = this.getAttribute('data-poster');
-          if(!mediaList.find(m => m.id === id && m.mediaType === mediaType)) {
-            mediaList.push({ id, mediaType, title, date, poster, watched: false, rating: null });
+      // Debounce helper for search
+      function debounce(func, delay) {
+        let timer;
+        return function (...args) {
+          clearTimeout(timer);
+          timer = setTimeout(() => func.apply(this, args), delay);
+        };
+      }
+
+      // TMDB search (movies & TV)
+      async function performSearch(query) {
+        const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+          query
+        )}`;
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          if (data.results)
+            renderSearchResults(data.results);
+          else
+            document.getElementById("searchResults").innerHTML =
+              "<p>No results found.</p>";
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      // Render search results (only movies/TV)
+      function renderSearchResults(results) {
+        const container = document.getElementById("searchResults");
+        container.innerHTML = "";
+        results.forEach((item) => {
+          if (
+            item.media_type !== "movie" &&
+            item.media_type !== "tv"
+          )
+            return;
+          const title =
+            item.media_type === "movie" ? item.title : item.name;
+          const date =
+            item.media_type === "movie"
+              ? item.release_date
+              : item.first_air_date;
+          const year = date ? date.substring(0, 4) : "N/A";
+          const posterUrl = item.poster_path
+            ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
+            : "https://via.placeholder.com/80x120";
+          const card = document.createElement("div");
+          card.className = "card mb-3 media-card";
+          card.innerHTML = `
+            <div class="row g-0">
+              <div class="col-auto">
+                <img src="${posterUrl}" alt="${title}" class="img-fluid" />
+              </div>
+              <div class="col">
+                <div class="card-body">
+                  <h5 class="card-title">${title}</h5>
+                  <p class="card-text"><small>${year}</small></p>
+                </div>
+              </div>
+            </div>
+          `;
+          // Clicking the card shows detailed info in a modal
+          card.addEventListener("click", function () {
+            fetchDetails(item.id, item.media_type);
+          });
+          container.appendChild(card);
+        });
+      }
+
+      // Fetch details info (movie or TV)
+      async function fetchDetails(id, mediaType) {
+        let url = "";
+        if (mediaType === "movie") {
+          url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}`;
+        } else if (mediaType === "tv") {
+          url = `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}`;
+        }
+        try {
+          const response = await fetch(url);
+          const details = await response.json();
+          showDetailsModal(details, mediaType);
+        } catch (error) {
+          console.error("Error fetching details:", error);
+        }
+      }
+
+      // Show details modal and populate fields
+      function showDetailsModal(details, mediaType) {
+        const title = mediaType === "movie" ? details.title : details.name;
+        document.getElementById("detailsModalLabel").innerText =
+          title;
+        const posterUrl = details.poster_path
+          ? `https://image.tmdb.org/t/p/w300${details.poster_path}`
+          : "https://via.placeholder.com/300x450";
+        document.getElementById("detailsPoster").src = posterUrl;
+        document.getElementById("detailsPoster").alt = title;
+        document.getElementById("detailsOverview").innerText =
+          details.overview || "No description available.";
+        document.getElementById("detailsDate").innerText =
+          details.release_date ||
+          details.first_air_date ||
+          "N/A";
+        document.getElementById("detailsRating").innerText =
+          details.vote_average
+            ? details.vote_average + " / 10"
+            : "N/A";
+        if (details.genres && details.genres.length > 0) {
+          const genreNames = details.genres.map((g) => g.name).join(", ");
+          document.getElementById("detailsGenres").innerHTML =
+            "<strong>Genres:</strong> " + genreNames;
+        } else {
+          document.getElementById("detailsGenres").innerHTML = "";
+        }
+        // Save current detail object for future watchlist addition
+        currentDetail = {
+          id: details.id,
+          media_type: mediaType,
+          title: title,
+          date:
+            details.release_date ||
+            details.first_air_date ||
+            "",
+          poster: posterUrl,
+          watched: false,
+          rating: null,
+          overview: details.overview || ""
+        };
+        detailsModal.show();
+      }
+
+      // Global variable to store current detail from modal
+      let currentDetail = null;
+      // Initialize details modal from Bootstrap
+      const detailsModal = new bootstrap.Modal(
+        document.getElementById("detailsModal")
+      );
+      // Add to Watchlist button in details modal
+      document
+        .getElementById("addToWatchlistBtn")
+        .addEventListener("click", function () {
+          if (!currentDetail) return;
+          if (
+            !mediaList.find(
+              (m) =>
+                m.id === currentDetail.id &&
+                m.media_type === currentDetail.media_type
+            )
+          ) {
+            mediaList.push(currentDetail);
             saveData();
-            alert('Added to Watchlist!');
+            alert("Added to Watchlist!");
             renderWatchlist();
           } else {
-            alert('Already in watchlist!');
+            alert("This item is already in your watchlist!");
           }
+          detailsModal.hide();
+          // Reset search input and results after adding
+          document.getElementById("searchQuery").value = "";
+          document.getElementById("searchResults").innerHTML = "";
         });
-      });
-    }
 
-    // Render Watchlist (not watched items)
-    function renderWatchlist() {
-      const container = document.getElementById('watchlistContainer');
-      container.innerHTML = '';
-      const list = mediaList.filter(m => !m.watched);
-      if(list.length === 0) {
-        container.innerHTML = '<p>Your watchlist is empty.</p>';
-        return;
-      }
-      list.forEach((m, idx) => {
-        const year = m.date ? m.date.substring(0, 4) : 'N/A';
-        const card = document.createElement('div');
-        card.className = 'card media-card';
-        card.innerHTML = `
-          <div class="row g-0">
-            <div class="col-auto">
-              <img src="${m.poster}" alt="${m.title}">
-            </div>
-            <div class="col">
-              <div class="card-body p-2">
-                <h6 class="card-title mb-1">${m.title}</h6>
-                <p class="card-text"><small>${year}</small></p>
-                <button class="btn btn-sm btn-success mark-btn" data-index="${idx}">
-                  Mark as Watched
-                </button>
+      // Render Watchlist (not watched items)
+      function renderWatchlist() {
+        const container =
+          document.getElementById("watchlistContainer");
+        container.innerHTML = "";
+        const list = mediaList.filter((m) => !m.watched);
+        if (list.length === 0) {
+          container.innerHTML = "<p>Your watchlist is empty.</p>";
+          return;
+        }
+        list.forEach((m, idx) => {
+          const year = m.date ? m.date.substring(0, 4) : "N/A";
+          const card = document.createElement("div");
+          card.className = "card mb-3";
+          card.innerHTML = `
+            <div class="row g-0">
+              <div class="col-auto">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
+              </div>
+              <div class="col">
+                <div class="card-body">
+                  <h5 class="card-title">${m.title}</h5>
+                  <p class="card-text"><small>${year}</small></p>
+                  <button class="btn btn-sm btn-success mark-btn float-end" data-index="${idx}">
+                    Mark as Watched
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-      
-      // Attach event listeners for mark as watched buttons
-      document.querySelectorAll('.mark-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const idx = this.getAttribute('data-index');
-          openRatingModal(idx);
+          `;
+          container.appendChild(card);
         });
-      });
-    }
-
-    // Render Watched Items
-    function renderWatched() {
-      const container = document.getElementById('watchedContainer');
-      container.innerHTML = '';
-      const list = mediaList.filter(m => m.watched);
-      if(list.length === 0) {
-        container.innerHTML = '<p>No items marked as watched.</p>';
-        return;
+        // Event listeners: "Mark as Watched"
+        document
+          .querySelectorAll(".mark-btn")
+          .forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const idx = this.getAttribute("data-index");
+              openRatingModal(idx);
+            });
+          });
       }
-      list.forEach(m => {
-        const year = m.date ? m.date.substring(0, 4) : 'N/A';
-        const card = document.createElement('div');
-        card.className = 'card media-card';
-        card.innerHTML = `
-          <div class="row g-0">
-            <div class="col-auto">
-              <img src="${m.poster}" alt="${m.title}">
-            </div>
-            <div class="col">
-              <div class="card-body p-2">
-                <h6 class="card-title mb-1">${m.title}</h6>
-                <p class="card-text"><small>${year}</small></p>
-                <p class="card-text"><small>Rating: ${m.rating} / 5</small></p>
+
+      // Render watched items
+      function renderWatched() {
+        const container =
+          document.getElementById("watchedContainer");
+        container.innerHTML = "";
+        const list = mediaList.filter((m) => m.watched);
+        if (list.length === 0) {
+          container.innerHTML =
+            "<p>No items marked as watched.</p>";
+          return;
+        }
+        list.forEach((m) => {
+          const year = m.date ? m.date.substring(0, 4) : "N/A";
+          const card = document.createElement("div");
+          card.className = "card mb-3";
+          card.innerHTML = `
+            <div class="row g-0">
+              <div class="col-auto">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
+              </div>
+              <div class="col">
+                <div class="card-body">
+                  <h5 class="card-title">${m.title}</h5>
+                  <p class="card-text"><small>${year}</small></p>
+                  <p class="card-text"><small>Rating: ${m.rating} / 5</small></p>
+                </div>
               </div>
             </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // Rating Modal functionality
-    let currentMarkIndex = null;
-    const ratingModal = new bootstrap.Modal(document.getElementById('ratingModal'));
-    function openRatingModal(index) {
-      currentMarkIndex = index;
-      document.querySelectorAll('#starRating i').forEach(star => star.classList.remove('selected'));
-      ratingModal.show();
-    }
-
-    document.querySelectorAll('#starRating i').forEach(star => {
-      star.addEventListener('click', function() {
-        const rating = parseInt(this.getAttribute('data-value'));
-        document.querySelectorAll('#starRating i').forEach(s => {
-          const val = parseInt(s.getAttribute('data-value'));
-          if(val <= rating) {
-            s.classList.add('selected');
-          } else {
-            s.classList.remove('selected');
-          }
+          `;
+          container.appendChild(card);
         });
-        const notWatched = mediaList.filter(m => !m.watched);
-        const item = notWatched[currentMarkIndex];
-        const originalIndex = mediaList.findIndex(m => m.id === item.id && m.mediaType === item.mediaType);
-        mediaList[originalIndex].watched = true;
-        mediaList[originalIndex].rating = rating;
-        saveData();
-        ratingModal.hide();
-        renderWatchlist();
-        renderWatched();
-        updateProfileUI();
+      }
+
+      // Rating Modal functionality (for marking as watched)
+      let currentMarkIndex = null;
+      const ratingModal = new bootstrap.Modal(
+        document.getElementById("ratingModal")
+      );
+      function openRatingModal(index) {
+        currentMarkIndex = index;
+        document
+          .querySelectorAll("#starRating i")
+          .forEach((star) => star.classList.remove("selected"));
+        ratingModal.show();
+      }
+      document.querySelectorAll("#starRating i").forEach((star) => {
+        star.addEventListener("click", function () {
+          const rating = parseInt(this.getAttribute("data-value"));
+          document.querySelectorAll("#starRating i").forEach((s) => {
+            const val = parseInt(s.getAttribute("data-value"));
+            if (val <= rating) {
+              s.classList.add("selected");
+            } else {
+              s.classList.remove("selected");
+            }
+          });
+          const notWatched = mediaList.filter((m) => !m.watched);
+          const item = notWatched[currentMarkIndex];
+          const originalIndex = mediaList.findIndex(
+            (m) =>
+              m.id === item.id &&
+              m.media_type === item.media_type
+          );
+          mediaList[originalIndex].watched = true;
+          mediaList[originalIndex].rating = rating;
+          saveData();
+          ratingModal.hide();
+          renderWatchlist();
+          renderWatched();
+          updateProfileUI();
+        });
       });
-    });
 
-    // Profile Section
-    function updateProfileUI() {
-      document.getElementById('profileName').innerText = user.name;
-      if(user.profileImage) {
-        document.getElementById('profileImage').src = user.profileImage;
-      } else {
-        document.getElementById('profileImage').src = 'https://via.placeholder.com/100';
+      // Profile Section update
+      function updateProfileUI() {
+        document.getElementById("profileName").innerText =
+          user.name;
+        // If the user hasn't updated name, show placeholder styling
+        if (user.name === "Guest User" || user.name === "") {
+          document
+            .getElementById("profileName")
+            .classList.add("placeholder");
+        } else {
+          document
+            .getElementById("profileName")
+            .classList.remove("placeholder");
+        }
+        if (user.profileImage) {
+          document.getElementById("profileImage").src =
+            user.profileImage;
+        } else {
+          document.getElementById("profileImage").src =
+            "https://via.placeholder.com/100";
+        }
+        const moviesWatched = mediaList.filter(
+          (m) => m.watched && m.media_type === "movie"
+        ).length;
+        const seriesWatched = mediaList.filter(
+          (m) => m.watched && m.media_type === "tv"
+        ).length;
+        const remaining = mediaList.filter((m) => !m.watched).length;
+        let avg = 0;
+        const watchedItems = mediaList.filter((m) => m.watched);
+        if (watchedItems.length > 0) {
+          avg =
+            watchedItems.reduce((sum, m) => sum + m.rating, 0) /
+            watchedItems.length;
+          avg = avg.toFixed(1);
+        }
+        document.getElementById("profileMetrics").innerHTML =
+          `Movies Watched: ${moviesWatched} <br> Series Watched: ${seriesWatched} <br> Remaining: ${remaining} <br> Average Rating: ${avg} / 5`;
       }
-      const moviesWatched = mediaList.filter(m => m.watched && m.mediaType === 'movie').length;
-      const seriesWatched = mediaList.filter(m => m.watched && m.mediaType === 'tv').length;
-      const remaining = mediaList.filter(m => !m.watched).length;
-      let avg = 0;
-      const watchedItems = mediaList.filter(m => m.watched);
-      if(watchedItems.length > 0) {
-        avg = watchedItems.reduce((sum, m) => sum + m.rating, 0) / watchedItems.length;
-        avg = avg.toFixed(1);
-      }
-      document.getElementById('profileMetrics').innerHTML =
-        `Movies Watched: ${moviesWatched} <br> Series Watched: ${seriesWatched} <br> Remaining: ${remaining} <br> Average Rating: ${avg} / 5`;
-    }
 
-    // Profile Edit functionality
-    document.getElementById('editProfileBtn').addEventListener('click', function() {
-      const form = document.getElementById('profileEditForm');
-      form.style.display = form.style.display === 'none' ? 'block' : 'none';
-      document.getElementById('editName').value = user.name;
-    });
-
-    document.getElementById('saveProfileBtn').addEventListener('click', function() {
-      user.name = document.getElementById('editName').value;
-      saveData();
-      updateProfileUI();
-      document.getElementById('profileEditForm').style.display = 'none';
-    });
-
-    // Profile image upload
-    document.getElementById('editImage').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if(file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          user.profileImage = event.target.result;
+      // Profile Edit functionality
+      document
+        .getElementById("editProfileBtn")
+        .addEventListener("click", function () {
+          const form =
+            document.getElementById("profileEditForm");
+          form.style.display =
+            form.style.display === "none" ? "block" : "none";
+          document.getElementById("editName").value =
+            user.name;
+        });
+      document
+        .getElementById("saveProfileBtn")
+        .addEventListener("click", function () {
+          user.name =
+            document.getElementById("editName").value;
           saveData();
           updateProfileUI();
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+          document.getElementById("profileEditForm").style.display =
+            "none";
+        });
+      document
+        .getElementById("editImage")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              user.profileImage = event.target.result;
+              saveData();
+              updateProfileUI();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
 
-    // Live search event with debounce
-    document.getElementById('searchQuery').addEventListener('keyup', debounce(function() {
-      const query = this.value.trim();
-      if(query) {
-        performSearch(query);
-      } else {
-        document.getElementById('searchResults').innerHTML = '';
-      }
-    }, 500));
+      // Live search event with debounce
+      document
+        .getElementById("searchQuery")
+        .addEventListener(
+          "keyup",
+          debounce(function () {
+            const query = this.value.trim();
+            if (query) {
+              performSearch(query);
+            } else {
+              document.getElementById("searchResults").innerHTML =
+                "";
+            }
+          }, 500)
+        );
 
-    // Initial render
-    updateProfileUI();
-    renderWatchlist();
-    renderWatched();
-  </script>
-</body>
+      // Initial render
+      updateProfileUI();
+      renderWatchlist();
+      renderWatched();
+    </script>
+  </body>
 </html>
-
