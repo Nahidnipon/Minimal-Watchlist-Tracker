@@ -1,74 +1,180 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TV Series Watchlist</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Media Watchlist</title>
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    .section { display: none; }
-    .active-section { display: block; }
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    /* Left Navigation Sidebar */
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      position: fixed;
+      background-color: #1e1e1e;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h3 {
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .nav-link {
+      color: #bbb;
+      padding: 10px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: #333;
+      color: #fff;
+    }
+    /* Main Content Area */
+    .content {
+      margin-left: 270px;
+      padding: 20px;
+    }
+    .tab {
+      display: none;
+    }
+    .tab.active-tab {
+      display: block;
+    }
+    /* Search Input Group */
+    .search-group {
+      max-width: 350px;
+      margin-bottom: 1rem;
+    }
+    /* Media Cards */
+    .media-card {
+      background-color: #222;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .media-card img {
+      width: 80px;
+      height: 120px;
+      object-fit: cover;
+    }
+    .media-card .card-body {
+      padding: 0.5rem;
+    }
+    /* Profile Card */
+    .profile-card {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+    .profile-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #444;
+    }
+    /* Star Rating Modal */
+    .star-rating i {
+      font-size: 1.5rem;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .star-rating i.selected {
+      color: gold;
+    }
   </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Watchlist</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link active" href="#" data-section="search">Search Series</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" data-section="watchlist">Watchlist</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" data-section="watched">Watched</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" data-section="profile">Profile</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <!-- Left Navigation Sidebar -->
+  <div class="sidebar">
+    <h3>Watchlist App</h3>
+    <a class="nav-link active" data-tab="watchlist">Watchlist</a>
+    <a class="nav-link" data-tab="watched">Watched</a>
+    <a class="nav-link" data-tab="profile">Profile</a>
+  </div>
 
-  <!-- Main Container -->
-  <div class="container mt-3">
-    <!-- Search Section -->
-    <div id="search" class="section active-section">
-      <h2>Search Series</h2>
-      <div class="input-group mb-3">
-        <input type="text" id="searchQuery" class="form-control" placeholder="Enter series title">
-        <button class="btn btn-primary" id="searchBtn">Search</button>
-      </div>
-      <div id="searchResults" class="row"></div>
-    </div>
-
-    <!-- Watchlist Section -->
-    <div id="watchlist" class="section">
+  <!-- Main Content -->
+  <div class="content">
+    <!-- Watchlist Tab: Search + List -->
+    <div id="watchlist" class="tab active-tab">
       <h2>Watchlist</h2>
-      <div id="watchlistContainer" class="row"></div>
+      <div class="search-group input-group">
+        <span class="input-group-text bg-dark text-light">
+          <i class="fas fa-search"></i>
+        </span>
+        <input type="text" id="searchQuery" class="form-control bg-dark text-light" placeholder="Search movies or series..." />
+      </div>
+      <div id="searchResults"></div>
+      <hr class="bg-secondary" />
+      <h4>Your Watchlist</h4>
+      <div id="watchlistContainer"></div>
     </div>
 
-    <!-- Watched Section -->
-    <div id="watched" class="section">
-      <h2>Watched Series</h2>
-      <div id="watchedContainer" class="row"></div>
+    <!-- Watched Tab -->
+    <div id="watched" class="tab">
+      <h2>Watched</h2>
+      <div id="watchedContainer"></div>
     </div>
 
-    <!-- Profile Section -->
-    <div id="profile" class="section">
+    <!-- Profile Tab -->
+    <div id="profile" class="tab">
       <h2>Profile</h2>
-      <div class="mb-3">
-        <label for="userName" class="form-label">Name:</label>
-        <input type="text" id="userName" class="form-control">
+      <div class="profile-card">
+        <img id="profileImage" src="https://via.placeholder.com/100" alt="Profile Image" />
+        <h3 id="profileName">Your Name</h3>
+        <button id="editProfileBtn" class="btn btn-secondary btn-sm mb-3">Edit Profile</button>
+        <div id="profileMetrics" class="mb-3"></div>
+        <!-- Edit Profile Form (hidden by default) -->
+        <div id="profileEditForm" style="display: none;" class="text-start">
+          <div class="mb-2">
+            <label for="editName" class="form-label">Name</label>
+            <input type="text" id="editName" class="form-control bg-dark text-light">
+          </div>
+          <div class="mb-2">
+            <label for="editImage" class="form-label">Profile Image</label>
+            <input type="file" id="editImage" accept="image/*" class="form-control bg-dark text-light">
+          </div>
+          <button id="saveProfileBtn" class="btn btn-primary btn-sm">Save</button>
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="profilePic" class="form-label">Profile Picture URL:</label>
-        <input type="text" id="profilePic" class="form-control">
+    </div>
+  </div>
+
+  <!-- Star Rating Modal -->
+  <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="ratingModalLabel">Rate (out of 5 stars)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="starRating" class="star-rating">
+            <i class="fas fa-star" data-value="1"></i>
+            <i class="fas fa-star" data-value="2"></i>
+            <i class="fas fa-star" data-value="3"></i>
+            <i class="fas fa-star" data-value="4"></i>
+            <i class="fas fa-star" data-value="5"></i>
+          </div>
+        </div>
       </div>
-      <button class="btn btn-success" id="saveProfile">Save Profile</button>
-      <hr>
-      <h4>Stats</h4>
-      <p id="stats"></p>
     </div>
   </div>
 
@@ -80,57 +186,96 @@
     // IMPORTANT: Replace with your TMDB API key.
     const TMDB_API_KEY = 'fa6ceab60f185619e0854acce9f0fcfd';
 
-    // Retrieve stored data or set defaults
-    let movies = JSON.parse(localStorage.getItem('movies')) || [];
-    let user = JSON.parse(localStorage.getItem('user')) || { name: 'Your Name', profilePic: '' };
+    // Data storage using localStorage
+    let mediaList = JSON.parse(localStorage.getItem('mediaList')) || [];
+    let user = JSON.parse(localStorage.getItem('user')) || { name: 'Your Name', profileImage: '' };
 
     function saveData() {
-      localStorage.setItem('movies', JSON.stringify(movies));
+      localStorage.setItem('mediaList', JSON.stringify(mediaList));
       localStorage.setItem('user', JSON.stringify(user));
     }
 
-    // Render search results using TMDB API data
+    // Navigation: switch tabs
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function() {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        const tab = this.getAttribute('data-tab');
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-tab'));
+        document.getElementById(tab).classList.add('active-tab');
+        if(tab === 'profile') updateProfileUI();
+      });
+    });
+
+    // Debounce helper
+    function debounce(func, delay) {
+      let timer;
+      return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
+
+    // TMDB search
+    async function performSearch(query) {
+      const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if(data.results) renderSearchResults(data.results);
+        else document.getElementById('searchResults').innerHTML = '<p>No results found.</p>';
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Render search results (movies and tv only)
     function renderSearchResults(results) {
       const container = document.getElementById('searchResults');
       container.innerHTML = '';
       results.forEach(item => {
-        const col = document.createElement('div');
-        col.className = 'col-12 mb-3';
-        // Build full poster URL using TMDB's image base URL
-        let posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/150';
-        col.innerHTML = `
-          <div class="card">
-            <div class="row g-0">
-              <div class="col-4">
-                <img src="${posterUrl}" class="img-fluid rounded-start" alt="${item.name}">
-              </div>
-              <div class="col-8">
-                <div class="card-body">
-                  <h5 class="card-title">${item.name}</h5>
-                  <p class="card-text">First Air Date: ${item.first_air_date ? item.first_air_date.substring(0, 4) : 'N/A'}</p>
-                  <button class="btn btn-primary add-btn" 
-                    data-id="${item.id}" 
-                    data-name="${item.name}" 
-                    data-first_air_date="${item.first_air_date}" 
-                    data-poster="${posterUrl}">
-                    Add to Watchlist
-                  </button>
-                </div>
+        if(item.media_type !== 'movie' && item.media_type !== 'tv') return;
+        const title = item.media_type === 'movie' ? item.title : item.name;
+        const date = item.media_type === 'movie' ? item.release_date : item.first_air_date;
+        const year = date ? date.substring(0, 4) : 'N/A';
+        const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/80x120';
+
+        const card = document.createElement('div');
+        card.className = 'card media-card';
+        card.innerHTML = `
+          <div class="row g-0">
+            <div class="col-auto">
+              <img src="${posterUrl}" alt="${title}">
+            </div>
+            <div class="col">
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1">${title}</h6>
+                <p class="card-text"><small>${year}</small></p>
+                <button class="btn btn-sm btn-primary add-btn"
+                  data-id="${item.id}"
+                  data-media-type="${item.media_type}"
+                  data-title="${encodeURIComponent(title)}"
+                  data-date="${date}"
+                  data-poster="${posterUrl}">
+                  Add
+                </button>
               </div>
             </div>
           </div>
         `;
-        container.appendChild(col);
+        container.appendChild(card);
       });
-      // Attach event listeners to "Add to Watchlist" buttons
+
+      // Attach event listeners for add buttons
       document.querySelectorAll('.add-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const id = this.getAttribute('data-id');
-          const name = this.getAttribute('data-name');
-          const firstAirDate = this.getAttribute('data-first_air_date');
+          const mediaType = this.getAttribute('data-media-type');
+          const title = decodeURIComponent(this.getAttribute('data-title'));
+          const date = this.getAttribute('data-date');
           const poster = this.getAttribute('data-poster');
-          if (!movies.find(m => m.id === id)) {
-            movies.push({ id, name, firstAirDate, poster, watched: false, rating: null });
+          if(!mediaList.find(m => m.id === id && m.mediaType === mediaType)) {
+            mediaList.push({ id, mediaType, title, date, poster, watched: false, rating: null });
             saveData();
             alert('Added to Watchlist!');
             renderWatchlist();
@@ -141,159 +286,175 @@
       });
     }
 
-    // Perform search using TMDB API
-    async function performSearch(query) {
-      const url = `https://api.themoviedb.org/3/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data.results && data.results.length > 0) {
-          renderSearchResults(data.results);
-        } else {
-          document.getElementById('searchResults').innerHTML = `<p>No results found.</p>`;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-
-    // Render the Watchlist (series not yet watched)
+    // Render Watchlist (not watched items)
     function renderWatchlist() {
       const container = document.getElementById('watchlistContainer');
       container.innerHTML = '';
-      const watchlistMovies = movies.filter(m => !m.watched);
-      if (watchlistMovies.length === 0) {
-        container.innerHTML = '<p>No series in watchlist.</p>';
+      const list = mediaList.filter(m => !m.watched);
+      if(list.length === 0) {
+        container.innerHTML = '<p>Your watchlist is empty.</p>';
         return;
       }
-      watchlistMovies.forEach((m, index) => {
-        const col = document.createElement('div');
-        col.className = 'col-12 mb-3';
-        col.innerHTML = `
-          <div class="card">
-            <div class="row g-0">
-              <div class="col-4">
-                <img src="${m.poster}" class="img-fluid rounded-start" alt="${m.name}">
-              </div>
-              <div class="col-8">
-                <div class="card-body">
-                  <h5 class="card-title">${m.name}</h5>
-                  <p class="card-text">First Air Date: ${m.firstAirDate ? m.firstAirDate.substring(0, 4) : 'N/A'}</p>
-                  <button class="btn btn-success mark-watched-btn" data-index="${index}">Mark as Watched</button>
-                </div>
+      list.forEach((m, idx) => {
+        const year = m.date ? m.date.substring(0, 4) : 'N/A';
+        const card = document.createElement('div');
+        card.className = 'card media-card';
+        card.innerHTML = `
+          <div class="row g-0">
+            <div class="col-auto">
+              <img src="${m.poster}" alt="${m.title}">
+            </div>
+            <div class="col">
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1">${m.title}</h6>
+                <p class="card-text"><small>${year}</small></p>
+                <button class="btn btn-sm btn-success mark-btn" data-index="${idx}">
+                  Mark as Watched
+                </button>
               </div>
             </div>
           </div>
         `;
-        container.appendChild(col);
+        container.appendChild(card);
       });
-      // Attach event listeners for "Mark as Watched"
-      document.querySelectorAll('.mark-watched-btn').forEach(btn => {
+      
+      // Attach event listeners for mark as watched buttons
+      document.querySelectorAll('.mark-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-          const index = this.getAttribute('data-index');
-          let rating = prompt('Enter rating (0-100):');
-          rating = parseInt(rating);
-          if (!isNaN(rating) && rating >= 0 && rating <= 100) {
-            // Find the movie in the overall list and update it
-            let notWatched = movies.filter(m => !m.watched);
-            const movieToMark = notWatched[index];
-            const originalIndex = movies.findIndex(m => m.id === movieToMark.id);
-            movies[originalIndex].watched = true;
-            movies[originalIndex].rating = rating;
-            saveData();
-            renderWatchlist();
-            renderWatched();
-            renderProfileStats();
-          } else {
-            alert('Invalid rating!');
-          }
+          const idx = this.getAttribute('data-index');
+          openRatingModal(idx);
         });
       });
     }
 
-    // Render Watched Series (with rating)
+    // Render Watched Items
     function renderWatched() {
       const container = document.getElementById('watchedContainer');
       container.innerHTML = '';
-      const watchedMovies = movies.filter(m => m.watched);
-      if (watchedMovies.length === 0) {
-        container.innerHTML = '<p>No watched series.</p>';
+      const list = mediaList.filter(m => m.watched);
+      if(list.length === 0) {
+        container.innerHTML = '<p>No items marked as watched.</p>';
         return;
       }
-      watchedMovies.forEach(m => {
-        const col = document.createElement('div');
-        col.className = 'col-12 mb-3';
-        col.innerHTML = `
-          <div class="card">
-            <div class="row g-0">
-              <div class="col-4">
-                <img src="${m.poster}" class="img-fluid rounded-start" alt="${m.name}">
-              </div>
-              <div class="col-8">
-                <div class="card-body">
-                  <h5 class="card-title">${m.name}</h5>
-                  <p class="card-text">First Air Date: ${m.firstAirDate ? m.firstAirDate.substring(0, 4) : 'N/A'}</p>
-                  <p class="card-text">Rating: ${m.rating}%</p>
-                </div>
+      list.forEach(m => {
+        const year = m.date ? m.date.substring(0, 4) : 'N/A';
+        const card = document.createElement('div');
+        card.className = 'card media-card';
+        card.innerHTML = `
+          <div class="row g-0">
+            <div class="col-auto">
+              <img src="${m.poster}" alt="${m.title}">
+            </div>
+            <div class="col">
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1">${m.title}</h6>
+                <p class="card-text"><small>${year}</small></p>
+                <p class="card-text"><small>Rating: ${m.rating} / 5</small></p>
               </div>
             </div>
           </div>
         `;
-        container.appendChild(col);
+        container.appendChild(card);
       });
     }
 
-    // Render Profile information and stats
-    function renderProfile() {
-      document.getElementById('userName').value = user.name;
-      document.getElementById('profilePic').value = user.profilePic;
-      renderProfileStats();
+    // Rating Modal functionality
+    let currentMarkIndex = null;
+    const ratingModal = new bootstrap.Modal(document.getElementById('ratingModal'));
+    function openRatingModal(index) {
+      currentMarkIndex = index;
+      document.querySelectorAll('#starRating i').forEach(star => star.classList.remove('selected'));
+      ratingModal.show();
     }
 
-    // Calculate and render watched count and average rating
-    function renderProfileStats() {
-      const watchedMovies = movies.filter(m => m.watched);
-      const count = watchedMovies.length;
+    document.querySelectorAll('#starRating i').forEach(star => {
+      star.addEventListener('click', function() {
+        const rating = parseInt(this.getAttribute('data-value'));
+        document.querySelectorAll('#starRating i').forEach(s => {
+          const val = parseInt(s.getAttribute('data-value'));
+          if(val <= rating) {
+            s.classList.add('selected');
+          } else {
+            s.classList.remove('selected');
+          }
+        });
+        const notWatched = mediaList.filter(m => !m.watched);
+        const item = notWatched[currentMarkIndex];
+        const originalIndex = mediaList.findIndex(m => m.id === item.id && m.mediaType === item.mediaType);
+        mediaList[originalIndex].watched = true;
+        mediaList[originalIndex].rating = rating;
+        saveData();
+        ratingModal.hide();
+        renderWatchlist();
+        renderWatched();
+        updateProfileUI();
+      });
+    });
+
+    // Profile Section
+    function updateProfileUI() {
+      document.getElementById('profileName').innerText = user.name;
+      if(user.profileImage) {
+        document.getElementById('profileImage').src = user.profileImage;
+      } else {
+        document.getElementById('profileImage').src = 'https://via.placeholder.com/100';
+      }
+      const moviesWatched = mediaList.filter(m => m.watched && m.mediaType === 'movie').length;
+      const seriesWatched = mediaList.filter(m => m.watched && m.mediaType === 'tv').length;
+      const remaining = mediaList.filter(m => !m.watched).length;
       let avg = 0;
-      if (count > 0) {
-        avg = watchedMovies.reduce((acc, m) => acc + m.rating, 0) / count;
+      const watchedItems = mediaList.filter(m => m.watched);
+      if(watchedItems.length > 0) {
+        avg = watchedItems.reduce((sum, m) => sum + m.rating, 0) / watchedItems.length;
         avg = avg.toFixed(1);
       }
-      document.getElementById('stats').innerText = `Watched Series: ${count} | Average Rating: ${avg}%`;
+      document.getElementById('profileMetrics').innerHTML =
+        `Movies Watched: ${moviesWatched} <br> Series Watched: ${seriesWatched} <br> Remaining: ${remaining} <br> Average Rating: ${avg} / 5`;
     }
 
-    // Navigation: show/hide sections based on nav click
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
-        const section = this.getAttribute('data-section');
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
-        document.getElementById(section).classList.add('active-section');
-        if (section === 'profile') renderProfile();
-      });
+    // Profile Edit functionality
+    document.getElementById('editProfileBtn').addEventListener('click', function() {
+      const form = document.getElementById('profileEditForm');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      document.getElementById('editName').value = user.name;
     });
 
-    // Search button event
-    document.getElementById('searchBtn').addEventListener('click', function() {
-      const query = document.getElementById('searchQuery').value;
-      if (query.trim() !== '') performSearch(query);
-    });
-
-    // Save profile event
-    document.getElementById('saveProfile').addEventListener('click', function() {
-      user.name = document.getElementById('userName').value;
-      user.profilePic = document.getElementById('profilePic').value;
+    document.getElementById('saveProfileBtn').addEventListener('click', function() {
+      user.name = document.getElementById('editName').value;
       saveData();
-      alert('Profile saved!');
-      renderProfileStats();
+      updateProfileUI();
+      document.getElementById('profileEditForm').style.display = 'none';
     });
 
-    // Initial rendering
+    // Profile image upload
+    document.getElementById('editImage').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          user.profileImage = event.target.result;
+          saveData();
+          updateProfileUI();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Live search event with debounce
+    document.getElementById('searchQuery').addEventListener('keyup', debounce(function() {
+      const query = this.value.trim();
+      if(query) {
+        performSearch(query);
+      } else {
+        document.getElementById('searchResults').innerHTML = '';
+      }
+    }, 500));
+
+    // Initial render
+    updateProfileUI();
     renderWatchlist();
     renderWatched();
-    renderProfileStats();
   </script>
 </body>
 </html>
+
