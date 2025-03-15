@@ -24,22 +24,23 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       font-family: 'Poppins', sans-serif;
-      /* Ensure there’s enough bottom padding for the fixed nav */
-      padding-bottom: 80px;
+      padding-bottom: 80px; /* For fixed bottom navigation */
     }
-    /* ===================== MAIN APP STYLES ===================== */
+    /* ------------------ MAIN APP CONTAINER ------------------ */
     .app-container {
       max-width: 500px;
       margin: 0 auto;
+      padding: 0 16px; /* Added left/right padding */
       position: relative;
       min-height: 100vh;
       background: var(--card-bg);
+      z-index: 100;
     }
     .app-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 16px;
+      padding: 12px 0;
       border-bottom: 1px solid #e1e4e8;
       background-color: var(--card-bg);
     }
@@ -69,7 +70,7 @@
       object-fit: cover;
     }
     .app-content {
-      padding: 16px;
+      padding: 16px 0;
     }
     .tab {
       display: none;
@@ -80,6 +81,43 @@
     .search-group {
       margin-bottom: 1rem;
     }
+    /* ------------------ SEARCH RESULTS (Grid Layout) ------------------ */
+    #searchResults {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+    .search-card {
+      border: none;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--card-bg);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .search-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .search-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .search-card .card-body {
+      padding: 0.5rem;
+    }
+    .search-card .card-title {
+      font-size: 1rem;
+      margin: 0;
+      font-weight: 500;
+    }
+    .search-card .card-text {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+    /* ------------------ WATCHLIST / WATCHED CARDS ------------------ */
     .media-card {
       border: 1px solid #e1e4e8;
       border-radius: 8px;
@@ -114,6 +152,7 @@
     .media-card .delete-btn:hover {
       opacity: 1;
     }
+    /* ------------------ PROFILE CARD ------------------ */
     .profile-card {
       position: relative;
       border: 1px solid #e1e4e8;
@@ -154,36 +193,60 @@
       font-size: 0.9rem;
       color: #555;
     }
-    /* ===================== DETAILS VIEW STYLES (UPDATED) ===================== */
+    /* ------------------ DETAILS VIEW (Overlay) ------------------ */
+    #detailsApp {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      background: var(--card-bg);
+      z-index: 200;
+      padding: 20px;
+      display: none;
+    }
     .details-container {
       max-width: 500px;
-      margin: 20px auto;
-      display: flex;
-      flex-direction: column;
-      min-height: calc(100vh - 40px);
-      padding: 20px;
-      padding-bottom: 60px;
+      margin: 0 auto;
       background: var(--card-bg);
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding-bottom: 60px;
     }
     .details-header {
       text-align: center;
+      position: relative;
+      padding: 20px 0;
     }
     .details-poster {
-      display: block;
-      margin: 0 auto 10px;
       width: 180px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
+    .btn-add-watchlist {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 50%;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      transition: background-color 0.3s;
+    }
+    .btn-add-watchlist:hover {
+      background-color: #17a589;
+    }
     .details-title {
       font-size: 1.8em;
-      margin-bottom: 10px;
+      margin: 10px 0;
       color: var(--secondary-color);
       text-align: center;
     }
-    /* Updated metadata styles */
     .details-meta {
       display: flex;
       flex-wrap: wrap;
@@ -227,24 +290,7 @@
       object-fit: cover;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .details-actions {
-      text-align: center;
-      margin-top: 10px;
-    }
-    .btn-add-watchlist {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 1rem;
-      width: 100%;
-      max-width: 300px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    }
-    .btn-add-watchlist:hover {
-      background-color: #17a589;
-    }
-    /* ===================== FIXED BOTTOM NAVIGATION ===================== */
+    /* ------------------ FIXED BOTTOM NAVIGATION ------------------ */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -259,7 +305,7 @@
       justify-content: space-around;
       align-items: center;
       box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-      z-index: 100;
+      z-index: 300;
     }
     .nav-btn {
       background: none;
@@ -272,7 +318,7 @@
     .nav-btn.active {
       color: var(--primary-color);
     }
-    /* Loading Spinner */
+    /* ------------------ LOADING SPINNER ------------------ */
     .spinner {
       text-align: center;
       padding: 20px;
@@ -280,7 +326,7 @@
   </style>
 </head>
 <body>
-  <!-- MAIN APP VIEW (Search, Watchlist, Watched, Profile) -->
+  <!-- MAIN APP VIEW -->
   <div id="mainApp" class="app-container">
     <!-- Header -->
     <header class="app-header">
@@ -393,34 +439,37 @@
     </div>
   </div>
 
-  <!-- DETAILS VIEW (UPDATED) -->
-  <div id="detailsApp" class="details-container">
-    <div class="details-header">
-      <img id="detailPoster" class="details-poster" src="" alt="Poster" loading="lazy">
-      <button class="btn-add-watchlist" id="addToWatchlistBtn">
-        <i class="fas fa-plus"></i> + Watchlist
-      </button>
-    </div>
-    <h1 id="detailTitle" class="details-title"></h1>
-    <div class="details-meta" id="detailMeta">
-      <div id="detailDate"><strong>Release:</strong> </div>
-      <div id="detailGenres"><strong>Genres:</strong> </div>
-      <div id="detailDuration"><strong>Duration:</strong> </div>
-      <div id="detailDirector"><strong>Director:</strong> </div>
-      <div id="detailLanguage"><strong>Language:</strong> </div>
-      <div id="detailRating"><strong>Rating:</strong> </div>
-    </div>
-    <div class="details-description">
-      <h3>Description</h3>
-      <p id="detailOverview"></p>
-    </div>
-    <div class="details-cast">
-      <h3>Cast</h3>
-      <div id="castList" class="details-cast-list"></div>
+  <!-- DETAILS VIEW (Overlay) -->
+  <div id="detailsApp">
+    <div class="details-container">
+      <div class="details-header">
+        <img id="detailPoster" class="details-poster" src="" alt="Poster" loading="lazy">
+        <!-- Plus button now only shows a plus icon -->
+        <button class="btn-add-watchlist" id="addToWatchlistBtn">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      <h1 id="detailTitle" class="details-title"></h1>
+      <div class="details-meta" id="detailMeta">
+        <div id="detailDate"><strong>Release:</strong> </div>
+        <div id="detailGenres"><strong>Genres:</strong> </div>
+        <div id="detailDuration"><strong>Duration:</strong> </div>
+        <div id="detailDirector"><strong>Director:</strong> </div>
+        <div id="detailLanguage"><strong>Language:</strong> </div>
+        <div id="detailRating"><strong>Rating:</strong> </div>
+      </div>
+      <div class="details-description">
+        <h3>Description</h3>
+        <p id="detailOverview"></p>
+      </div>
+      <div class="details-cast">
+        <h3>Cast</h3>
+        <div id="castList" class="details-cast-list"></div>
+      </div>
     </div>
   </div>
 
-  <!-- FIXED BOTTOM NAVIGATION (Visible on all pages) -->
+  <!-- FIXED BOTTOM NAVIGATION -->
   <nav class="bottom-nav">
     <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
       <i class="fas fa-bookmark"></i>
@@ -443,21 +492,44 @@
     const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
     let currentDetail = null;
     
-    // Determine which view to show based on URL parameters
+    // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const mediaTypeParam = urlParams.get("media_type");
     const idParam = urlParams.get("id");
+
+    // Always initialize the main app (it remains visible in the background)
+    initMainApp();
+
+    // If details parameters exist, display the details view as an overlay
     if (mediaTypeParam && idParam) {
-      document.getElementById("mainApp").style.display = "none";
       document.getElementById("detailsApp").style.display = "block";
       loadDetails(mediaTypeParam, idParam);
     } else {
-      document.getElementById("mainApp").style.display = "block";
       document.getElementById("detailsApp").style.display = "none";
-      initMainApp();
     }
-    
-    /* -------------------- MAIN APP CODE -------------------- */
+
+    /* -------------------- GLOBAL BOTTOM NAVIGATION HANDLER -------------------- */
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", function () {
+        // Hide details overlay if visible
+        if (document.getElementById("detailsApp").style.display === "block") {
+          document.getElementById("detailsApp").style.display = "none";
+          history.pushState("", document.title, window.location.pathname);
+        }
+        // Remove active class from all nav buttons
+        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        // Switch active tab
+        const tab = this.getAttribute("data-tab");
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
+        document.getElementById(tab).classList.add("active-tab");
+        document.getElementById("currentTabTitle").innerText = this.title;
+        // If switching to profile, update profile info
+        if(tab === "profile" && typeof renderProfile === "function") renderProfile();
+      });
+    });
+
+    /* -------------------- MAIN APP FUNCTIONS -------------------- */
     function initMainApp() {
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
@@ -472,12 +544,7 @@
         localStorage.setItem("userProfile", JSON.stringify(userProfile));
       }
 
-      function updateProfileHeader() {
-        document.getElementById("profileName").innerText = userProfile.name;
-        document.getElementById("profileImage").src = userProfile.image;
-      }
-
-      function renderProfile() {
+      window.renderProfile = function() {
         const watchedItems = mediaList.filter(m => m.watched);
         const watchlistItems = mediaList.filter(m => !m.watched);
         const watchedCount = watchedItems.length;
@@ -491,18 +558,10 @@
           `Watched: ${watchedCount} | Watchlisted: ${watchlistCount} | Watch Hours: ${totalWatchHours}h | Satisfaction: ${avgRating}`;
       }
 
-      // Bottom Navigation (Switch tabs)
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-          document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-          this.classList.add("active");
-          const tab = this.getAttribute("data-tab");
-          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
-          document.getElementById(tab).classList.add("active-tab");
-          document.getElementById("currentTabTitle").innerText = this.title;
-          if(tab === "profile") renderProfile();
-        });
-      });
+      function updateProfileHeader() {
+        document.getElementById("profileName").innerText = userProfile.name;
+        document.getElementById("profileImage").src = userProfile.image;
+      }
 
       // Profile Edit Modal
       const profileModal = new bootstrap.Modal(document.getElementById("profileModal"));
@@ -574,20 +633,14 @@
           const title = item.media_type === "movie" ? item.title : item.name;
           const date = item.media_type === "movie" ? item.release_date : item.first_air_date;
           const year = date ? date.substring(0, 4) : "N/A";
-          const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : "https://via.placeholder.com/80x120";
+          const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : "https://via.placeholder.com/200x300";
           const card = document.createElement("div");
-          card.className = "card mb-3 media-card";
+          card.className = "search-card";
           card.innerHTML = `
-            <div class="row g-0">
-              <div class="col-auto">
-                <img src="${posterUrl}" alt="${title}" class="img-fluid" loading="lazy" />
-              </div>
-              <div class="col">
-                <div class="card-body">
-                  <h5 class="card-title">${title}</h5>
-                  <p class="card-text"><small>${year}</small></p>
-                </div>
-              </div>
+            <img src="${posterUrl}" alt="${title}" loading="lazy" />
+            <div class="card-body">
+              <h5 class="card-title">${title}</h5>
+              <p class="card-text"><small>${year}</small></p>
             </div>
           `;
           card.addEventListener("click", function () {
@@ -598,7 +651,10 @@
       }
 
       function openDetailsPage(id, mediaType) {
-        window.location.href = `?media_type=${mediaType}&id=${id}`;
+        // Update URL parameters without reloading the page
+        history.pushState({}, "", `?media_type=${mediaType}&id=${id}`);
+        document.getElementById("detailsApp").style.display = "block";
+        loadDetails(mediaType, id);
       }
 
       function renderWatchlist() {
@@ -768,7 +824,7 @@
       updateProfileHeader();
     }
 
-    /* -------------------- DETAILS VIEW CODE (UPDATED) -------------------- */
+    /* -------------------- DETAILS VIEW FUNCTIONS -------------------- */
     function loadDetails(mediaType, id) {
       if (!mediaType || !id) {
         document.getElementById("detailTitle").innerText = "Invalid Item";
@@ -807,7 +863,6 @@
         mediaType === "movie" ? (details.runtime ? (details.runtime / 60).toFixed(1) + "h" : "N/A") : 
         (details.episode_run_time && details.episode_run_time.length > 0 ? (details.episode_run_time[0] / 60).toFixed(1) + "h" : "N/A")
       }`;
-      // Remove popularity and add director
       let director = "N/A";
       if(details.credits && details.credits.crew) {
         const directorObj = details.credits.crew.find(member => member.job === "Director");
@@ -861,15 +916,19 @@
         castList.appendChild(castItem);
       });
     }
+    // Modified Add to Watchlist: saves the item and then switches to the Watchlist tab
     document.getElementById("addToWatchlistBtn").addEventListener("click", function () {
+      if (!currentDetail) return;
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       if (!mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)) {
         mediaList.push(currentDetail);
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
-        alert("Added to Watchlist!");
-      } else {
-        alert("Item already in Watchlist!");
       }
+      // Hide details overlay and update URL
+      document.getElementById("detailsApp").style.display = "none";
+      history.pushState("", document.title, window.location.pathname);
+      // Automatically switch to the Watchlist tab
+      document.querySelector('.nav-btn[data-tab="watchlist"]').click();
     });
   </script>
 </body>
