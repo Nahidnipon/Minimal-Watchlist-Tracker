@@ -77,11 +77,10 @@
 
   <!-- Main JavaScript -->
   <script>
-    // IMPORTANT: Replace the placeholder below with your TMDB API key.
-    // The key you provided (fb799eb4) is for OMDb and will not work here.
-    const TMDB_API_KEY = 'fb799eb4';
+    // IMPORTANT: Replace with your TMDB API key.
+    const TMDB_API_KEY = 'fa6ceab60f185619e0854acce9f0fcfd';
 
-    // Retrieve stored data or initialize defaults
+    // Retrieve stored data or set defaults
     let movies = JSON.parse(localStorage.getItem('movies')) || [];
     let user = JSON.parse(localStorage.getItem('user')) || { name: 'Your Name', profilePic: '' };
 
