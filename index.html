@@ -1,292 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Media Watchlist</title>
-    <!-- Google Fonts: Poppins -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- FontAwesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <style>
-      /* Global Styles */
-      body {
-        background-color: #f0f2f5;
-        color: #333;
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        padding: 0;
-      }
-      /* App Container */
-      .app-container {
-        max-width: 500px;
-        margin: 0 auto;
-        position: relative;
-        min-height: 100vh;
-        background: #fff;
-      }
-      /* Header */
-      .app-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        border-bottom: 1px solid #e1e4e8;
-        background-color: #fff;
-      }
-      #currentTabTitle {
-        font-size: 1.5rem;
-        font-weight: 700;
-      }
-      /* Profile Container (Name left of image) */
-      .profile-container {
-        display: inline-flex;
-        align-items: center;
-        cursor: pointer;
-      }
-      #profileName {
-        margin-right: 10px;
-        font-weight: 500;
-        font-size: 0.9rem;
-      }
-      #profileImageContainer {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        overflow: hidden;
-        background-color: #ddd;
-      }
-      #profileImageContainer img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      /* Content Area */
-      .app-content {
-        padding: 16px;
-        padding-bottom: 80px; /* extra bottom padding for nav */
-      }
-      .tab {
-        display: none;
-      }
-      .tab.active-tab {
-        display: block;
-      }
-      /* Search Box */
-      .search-group {
-        margin-bottom: 1rem;
-      }
-      /* Media Cards */
-      .media-card {
-        border: 1px solid #e1e4e8;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
-        position: relative;
-      }
-      .media-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-      .media-card img {
-        width: 80px;
-        height: 120px;
-        object-fit: cover;
-      }
-      .media-card .delete-btn {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: none;
-        border: none;
-        color: #e74c3c;
-        font-size: 1rem;
-        opacity: 0.7;
-        transition: opacity 0.3s;
-      }
-      .media-card .delete-btn:hover {
-        opacity: 1;
-      }
-      /* Modal Image */
-      #detailsPoster {
-        width: 100%;
-        max-width: 300px;
-      }
-      /* Star Rating */
-      .star-rating i {
-        font-size: 2rem;
-        color: #ccc;
-        cursor: pointer;
-        transition: transform 0.2s ease, color 0.2s ease;
-      }
-      .star-rating i.selected {
-        color: #f1c40f;
-        animation: slideIn 0.3s forwards;
-      }
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateX(-10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-      /* Bottom Navigation */
-      .bottom-nav {
-        position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 500px;
-        height: 60px;
-        background-color: #fff;
-        border-top: 1px solid #e1e4e8;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-        z-index: 100;
-      }
-      .nav-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: #333;
-        cursor: pointer;
-        transition: color 0.3s;
-      }
-      .nav-btn.active {
-        color: #1abc9c;
-      }
-      /* Buttons */
-      .btn {
-        padding: 0.4rem 0.8rem;
-      }
-      .mark-btn {
-        margin-top: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="app-container">
-      <!-- Header -->
-      <header class="app-header">
-        <h2 id="currentTabTitle">Discover</h2>
-        <div id="profileContainer" class="profile-container">
-          <span id="profileName" class="d-none d-sm-inline">Default Name</span>
-          <div id="profileImageContainer">
-            <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" />
-          </div>
-        </div>
-      </header>
-
-      <!-- Content -->
-      <main class="app-content">
-        <!-- Discover/Search Tab -->
-        <div id="search" class="tab active-tab">
-          <div class="search-group input-group">
-            <span class="input-group-text">
-              <i class="fas fa-search"></i>
-            </span>
-            <input
-              type="text"
-              id="searchQuery"
-              class="form-control"
-              placeholder="Search movies or series..."
-            />
-          </div>
-          <div id="searchResults"></div>
-        </div>
-        <!-- Watchlist Tab -->
-        <div id="watchlist" class="tab">
-          <div class="d-flex justify-content-end mb-3">
-            <select id="watchlistSort" class="form-select form-select-sm" style="width: auto;">
-              <option value="latest">Latest to Oldest</option>
-              <option value="oldest">Oldest to Latest</option>
-            </select>
-          </div>
-          <div id="watchlistContainer"></div>
-        </div>
-        <!-- Watched Tab -->
-        <div id="watched" class="tab">
-          <div class="d-flex justify-content-end mb-3">
-            <select id="watchedSort" class="form-select form-select-sm" style="width: auto;">
-              <option value="latest">Latest to Oldest</option>
-              <option value="oldest">Oldest to Latest</option>
-            </select>
-          </div>
-          <div id="watchedContainer"></div>
-        </div>
-      </main>
-
-      <!-- Bottom Navigation -->
-      <nav class="bottom-nav">
-        <button type="button" class="nav-btn active" data-tab="search" title="Discover">
-          <i class="fas fa-search"></i>
-        </button>
-        <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
-          <i class="fas fa-bookmark"></i>
-        </button>
-        <button type="button" class="nav-btn" data-tab="watched" title="Watched">
-          <i class="fas fa-eye"></i>
-        </button>
-      </nav>
-    </div>
-
-    <!-- Details Modal for Search Item -->
-    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="detailsModalLabel"></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <img id="detailsPoster" src="" alt="" class="img-fluid rounded" />
-              </div>
-              <div class="col-md-8">
-                <p id="detailsOverview"></p>
-                <ul class="list-group mb-3">
-                  <li class="list-group-item">
-                    <strong>Release Date:</strong> <span id="detailsDate"></span>
-                  </li>
-                  <li class="list-group-item">
-                    <strong>Rating:</strong> <span id="detailsRating"></span>
-                  </li>
-                  <li class="list-group-item" id="detailsGenres"></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button id="addToWatchlistBtn" class="btn btn-outline-primary btn-sm w-100">
-              <i class="fas fa-plus"></i> Add to Watchlist
-            </button>
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Media Watchlist</title>
+  <!-- Google Fonts: Poppins -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- FontAwesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    :root {
+      --primary-color: #1abc9c;
+      --secondary-color: #333;
+      --bg-color: #f0f2f5;
+      --card-bg: #fff;
+      --text-color: #333;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Poppins', sans-serif;
+    }
+    /* ===================== MAIN APP STYLES ===================== */
+    .app-container {
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+      min-height: 100vh;
+      background: var(--card-bg);
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e1e4e8;
+      background-color: var(--card-bg);
+    }
+    #currentTabTitle {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .profile-container {
+      display: inline-flex;
+      align-items: center;
+    }
+    #profileName {
+      margin-right: 10px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    #profileImageContainer {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: #ddd;
+    }
+    #profileImageContainer img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .app-content {
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+    .tab {
+      display: none;
+    }
+    .tab.active-tab {
+      display: block;
+    }
+    .search-group {
+      margin-bottom: 1rem;
+    }
+    .media-card {
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      background: var(--card-bg);
+      position: relative;
+    }
+    .media-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .media-card img {
+      width: 80px;
+      height: 120px;
+      object-fit: cover;
+    }
+    .media-card .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: none;
+      border: none;
+      color: #e74c3c;
+      font-size: 1rem;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .media-card .delete-btn:hover {
+      opacity: 1;
+    }
+    .profile-card {
+      position: relative;
+      border: 1px solid #e1e4e8;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      background: var(--card-bg);
+    }
+    .profile-card .edit-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.2rem;
+      color: var(--primary-color);
+      cursor: pointer;
+    }
+    .profile-card .profile-img {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: #ddd;
+    }
+    .profile-card .profile-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-card .profile-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .profile-card .profile-stats {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 500px;
+      height: 60px;
+      background-color: var(--card-bg);
+      border-top: 1px solid #e1e4e8;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .nav-btn.active {
+      color: var(--primary-color);
+    }
+    .details-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    .details-header {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .details-poster {
+      width: 150px;
+      margin-right: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .details-info {
+      flex-grow: 1;
+    }
+    .details-title {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      color: var(--secondary-color);
+    }
+    .details-meta {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+    }
+    .details-meta div {
+      margin-right: 10px;
+      margin-bottom: 5px;
+    }
+    #detailDate {
+      margin-right: 10px;
+      margin-bottom: 5px;
+    }
+    .details-cast {
+      margin-bottom: 20px;
+    }
+    .details-cast h2 {
+      margin-bottom: 10px;
+      color: var(--secondary-color);
+      font-size: 1.2em;
+    }
+    .details-cast-list {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .cast-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .cast-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .details-description {
+      line-height: 1.6;
+      color: #555;
+      font-size: 0.9em;
+    }
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 101;
+    }
+    .floating-btn:hover {
+      background-color: #17a589;
+    }
+  </style>
+</head>
+<body>
+  <!-- ===================== MAIN APP VIEW ===================== -->
+  <div id="mainApp" class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h2 id="currentTabTitle">Search</h2>
+      <div id="profileContainer" class="profile-container">
+        <span id="profileName" class="d-none d-sm-inline">Default Name</span>
+        <div id="profileImageContainer">
+          <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" />
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- Rating Modal (for marking as watched) -->
+    <!-- Content -->
+    <main class="app-content">
+      <!-- Watchlist Tab -->
+      <div id="watchlist" class="tab">
+        <div class="d-flex justify-content-end mb-3">
+          <select id="watchlistSort" class="form-select form-select-sm" style="width: auto;">
+            <option value="release_new">Release Date: Newest First</option>
+            <option value="release_old">Release Date: Oldest First</option>
+            <option value="recent">Recently Added</option>
+          </select>
+        </div>
+        <div id="watchlistContainer"></div>
+      </div>
+      <!-- Search Tab -->
+      <div id="search" class="tab active-tab">
+        <div class="search-group input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <input
+            type="text"
+            id="searchQuery"
+            class="form-control"
+            placeholder="Search movies or series..."
+          />
+        </div>
+        <div id="searchResults"></div>
+      </div>
+      <!-- Watched Tab -->
+      <div id="watched" class="tab">
+        <div class="d-flex justify-content-end mb-3">
+          <select id="watchedSort" class="form-select form-select-sm" style="width: auto;">
+            <option value="release_new">Release Date: Newest First</option>
+            <option value="release_old">Release Date: Oldest First</option>
+            <option value="recent">Recently Added</option>
+          </select>
+        </div>
+        <div id="watchedContainer"></div>
+      </div>
+      <!-- Profile Tab -->
+      <div id="profile" class="tab">
+        <div class="profile-card">
+          <div class="edit-icon" id="profileEditBtn">
+            <i class="fas fa-pencil-alt"></i>
+          </div>
+          <div class="profile-img">
+            <img id="profileCardImage" src="https://via.placeholder.com/100" alt="Profile" />
+          </div>
+          <h4 class="profile-name" id="profileCardName">Default Name</h4>
+          <p class="profile-stats" id="profileStats">
+            Watched: 0 | Watchlisted: 0 | Watch Hours: 0h | Satisfaction: 0
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
+        <i class="fas fa-bookmark"></i>
+      </button>
+      <button type="button" class="nav-btn active" data-tab="search" title="Search">
+        <i class="fas fa-search"></i>
+      </button>
+      <button type="button" class="nav-btn" data-tab="watched" title="Watched">
+        <i class="fas fa-eye"></i>
+      </button>
+      <button type="button" class="nav-btn" data-tab="profile" title="Profile">
+        <i class="fas fa-user"></i>
+      </button>
+    </nav>
+
+    <!-- Rating Modal -->
     <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -335,18 +418,61 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Main JavaScript -->
-    <script>
-      // IMPORTANT: Replace with your TMDB API key.
-      const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
+  <!-- ===================== DETAILS VIEW ===================== -->
+  <div id="detailsApp" class="details-container">
+    <div class="details-header">
+      <img id="detailPoster" class="details-poster" src="" alt="Poster">
+      <div class="details-info">
+        <h1 id="detailTitle" class="details-title"></h1>
+        <div class="details-meta" id="detailMeta">
+          <div id="detailDate"><strong>Release Date:</strong> </div>
+          <div id="detailGenres"><strong>Genres:</strong> </div>
+          <div id="detailDuration"><strong>Duration:</strong> </div>
+          <div id="detailPopularity"><strong>Popularity:</strong> </div>
+          <div id="detailRating"><strong>Rating:</strong> </div>
+          <div id="detailLanguage"><strong>Language:</strong> </div>
+        </div>
+      </div>
+    </div>
+    <div class="details-cast">
+      <h2>Cast</h2>
+      <div id="castList" class="details-cast-list"></div>
+    </div>
+    <div class="details-description">
+      <p id="detailOverview"></p>
+    </div>
+    <button class="floating-btn" id="addToWatchlistBtn">
+      <i class="fas fa-plus"></i> Add to Watchlist
+    </button>
+  </div>
 
+  <!-- ===================== SCRIPTS ===================== -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Replace with your valid TMDB API key
+    const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd"; 
+    let currentDetail = null;
+    
+    // Decide which view to show based on URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const mediaTypeParam = urlParams.get("media_type");
+    const idParam = urlParams.get("id");
+    if (mediaTypeParam && idParam) {
+      document.getElementById("mainApp").style.display = "none";
+      document.getElementById("detailsApp").style.display = "block";
+      loadDetails(mediaTypeParam, idParam);
+    } else {
+      document.getElementById("mainApp").style.display = "block";
+      document.getElementById("detailsApp").style.display = "none";
+      initMainApp();
+    }
+    
+    /* -------------------- MAIN APP CODE -------------------- */
+    function initMainApp() {
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
-
-      // User Profile Data stored as name and image (base64 if uploaded)
       let userProfile = JSON.parse(localStorage.getItem("userProfile")) || {
         name: "Default Name",
         image: "https://via.placeholder.com/40"
@@ -358,13 +484,26 @@
         localStorage.setItem("userProfile", JSON.stringify(userProfile));
       }
 
-      // Update Profile Header
       function updateProfileHeader() {
         document.getElementById("profileName").innerText = userProfile.name;
         document.getElementById("profileImage").src = userProfile.image;
       }
 
-      // Bottom Navigation: switch tabs and update header title
+      function renderProfile() {
+        const watchedItems = mediaList.filter(m => m.watched);
+        const watchlistItems = mediaList.filter(m => !m.watched);
+        const watchedCount = watchedItems.length;
+        const watchlistCount = watchlistItems.length;
+        const totalWatchHours = watchedItems.reduce((total, item) => total + (parseFloat(item.duration) || 0), 0).toFixed(1);
+        const totalRating = watchedItems.reduce((sum, item) => sum + (item.rating || 0), 0);
+        const avgRating = watchedCount ? (totalRating / watchedCount).toFixed(1) : "0";
+        document.getElementById("profileCardImage").src = userProfile.image;
+        document.getElementById("profileCardName").innerText = userProfile.name;
+        document.getElementById("profileStats").innerText =
+          `Watched: ${watchedCount} | Watchlisted: ${watchlistCount} | Watch Hours: ${totalWatchHours}h | Satisfaction: ${avgRating}`;
+      }
+
+      // Bottom Navigation
       document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", function () {
           document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
@@ -372,21 +511,20 @@
           const tab = this.getAttribute("data-tab");
           document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
           document.getElementById(tab).classList.add("active-tab");
-          // Update header title based on button's title attribute
           document.getElementById("currentTabTitle").innerText = this.title;
+          if(tab === "profile") renderProfile();
         });
       });
 
-      // Header Profile Click: Open Profile Edit Modal
+      // Profile edit
       const profileModal = new bootstrap.Modal(document.getElementById("profileModal"));
-      document.getElementById("profileContainer").addEventListener("click", function () {
+      document.getElementById("profileEditBtn").addEventListener("click", function () {
         document.getElementById("editName").value = userProfile.name;
         document.getElementById("editImage").value = "";
         document.getElementById("profilePreview").style.display = "none";
         profileModal.show();
       });
 
-      // Handle image preview on file select
       document.getElementById("editImage").addEventListener("change", function (e) {
         const file = e.target.files[0];
         if (file) {
@@ -399,7 +537,6 @@
         }
       });
 
-      // Save profile changes
       document.getElementById("saveProfileBtn").addEventListener("click", function () {
         const newName = document.getElementById("editName").value || "Default Name";
         userProfile.name = newName;
@@ -410,31 +547,35 @@
             userProfile.image = evt.target.result;
             saveData();
             updateProfileHeader();
+            renderProfile();
             profileModal.hide();
           };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
           saveData();
           updateProfileHeader();
+          renderProfile();
           profileModal.hide();
         }
       });
 
-      // TMDB search (movies & TV)
       async function performSearch(query) {
         const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
         try {
           const response = await fetch(url);
+          if (!response.ok) throw new Error("Network response was not ok");
           const data = await response.json();
-          if (data.results) renderSearchResults(data.results);
-          else document.getElementById("searchResults").innerHTML =
-            "<p>No results found. Try another search!</p>";
+          if (data.results && Array.isArray(data.results)) {
+            renderSearchResults(data.results);
+          } else {
+            document.getElementById("searchResults").innerHTML = "<p>No results found. Try another search!</p>";
+          }
         } catch (error) {
-          console.error("Error:", error);
+          console.error("Search error:", error);
+          document.getElementById("searchResults").innerHTML = "<p>Error fetching search results.</p>";
         }
       }
 
-      // Render Search Results
       function renderSearchResults(results) {
         const container = document.getElementById("searchResults");
         container.innerHTML = "";
@@ -460,81 +601,29 @@
             </div>
           `;
           card.addEventListener("click", function () {
-            fetchDetails(item.id, item.media_type);
+            openDetailsPage(item.id, item.media_type);
           });
           container.appendChild(card);
         });
       }
 
-      async function fetchDetails(id, mediaType) {
-        let url = "";
-        if (mediaType === "movie") {
-          url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}`;
-        } else if (mediaType === "tv") {
-          url = `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}`;
-        }
-        try {
-          const response = await fetch(url);
-          const details = await response.json();
-          showDetailsModal(details, mediaType);
-        } catch (error) {
-          console.error("Error fetching details:", error);
-        }
+      function openDetailsPage(id, mediaType) {
+        window.location.href = `?media_type=${mediaType}&id=${id}`;
       }
 
-      function showDetailsModal(details, mediaType) {
-        const title = mediaType === "movie" ? details.title : details.name;
-        document.getElementById("detailsModalLabel").innerText = title;
-        const posterUrl = details.poster_path ? `https://image.tmdb.org/t/p/w300${details.poster_path}` : "https://via.placeholder.com/300x450";
-        document.getElementById("detailsPoster").src = posterUrl;
-        document.getElementById("detailsPoster").alt = title;
-        document.getElementById("detailsOverview").innerText = details.overview || "No description available.";
-        document.getElementById("detailsDate").innerText = details.release_date || details.first_air_date || "N/A";
-        document.getElementById("detailsRating").innerText = details.vote_average ? details.vote_average + " / 10" : "N/A";
-        if (details.genres && details.genres.length > 0) {
-          const genreNames = details.genres.map(g => g.name).join(", ");
-          document.getElementById("detailsGenres").innerHTML = "<strong>Genres:</strong> " + genreNames;
-        } else {
-          document.getElementById("detailsGenres").innerHTML = "";
-        }
-        currentDetail = {
-          id: details.id,
-          media_type: mediaType,
-          title: title,
-          date: details.release_date || details.first_air_date || "",
-          poster: posterUrl,
-          watched: false,
-          rating: null,
-          overview: details.overview || ""
-        };
-        detailsModal.show();
-      }
-
-      let currentDetail = null;
-      const detailsModal = new bootstrap.Modal(document.getElementById("detailsModal"));
-
-      document.getElementById("addToWatchlistBtn").addEventListener("click", function () {
-        if (!currentDetail) return;
-        if (!mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)) {
-          mediaList.push(currentDetail);
-          saveData();
-          renderWatchlist();
-        }
-        detailsModal.hide();
-        document.getElementById("searchQuery").value = "";
-        document.getElementById("searchResults").innerHTML = "";
-      });
-
-      // Render Watchlist
       function renderWatchlist() {
         const container = document.getElementById("watchlistContainer");
         container.innerHTML = "";
         let list = mediaList.filter(m => !m.watched);
-        const sortOrder = document.getElementById("watchlistSort")?.value || "latest";
+        const sortOrder = document.getElementById("watchlistSort").value || "release_new";
         list.sort((a, b) => {
-          let dateA = new Date(a.date).getTime() || 0;
-          let dateB = new Date(b.date).getTime() || 0;
-          return sortOrder === "latest" ? dateB - dateA : dateA - dateB;
+          if(sortOrder === "release_new") {
+            return (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0);
+          } else if(sortOrder === "release_old") {
+            return (new Date(a.date).getTime() || 0) - (new Date(b.date).getTime() || 0);
+          } else if(sortOrder === "recent") {
+            return (b.added || 0) - (a.added || 0);
+          }
         });
         if (list.length === 0) {
           container.innerHTML = "<p>Your watchlist is feeling lonely... Add some awesome media!</p>";
@@ -542,6 +631,12 @@
         }
         list.forEach((m, idx) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
+          let extraInfo = "";
+          if(m.media_type === "tv") {
+            extraInfo = `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`;
+          } else {
+            extraInfo = `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
+          }
           const card = document.createElement("div");
           card.className = "card mb-3 media-card";
           card.innerHTML = `
@@ -554,10 +649,9 @@
                 <div class="card-body">
                   <h5 class="card-title">${m.title}</h5>
                   <p class="card-text"><small>${year}</small></p>
+                  ${extraInfo}
                   <p class="card-text"><small>${m.overview || "No synopsis available."}</small></p>
-                  <button class="btn btn-sm btn-outline-secondary mark-btn" data-index="${idx}" style="margin-top:10px;">
-                    I Watched It
-                  </button>
+                  <button class="btn btn-sm btn-outline-secondary mark-btn" data-index="${idx}" style="margin-top:10px;">I Watched It</button>
                 </div>
               </div>
             </div>
@@ -579,16 +673,19 @@
         });
       }
 
-      // Render Watched Items
       function renderWatched() {
         const container = document.getElementById("watchedContainer");
         container.innerHTML = "";
         let list = mediaList.filter(m => m.watched);
-        const sortOrder = document.getElementById("watchedSort")?.value || "latest";
+        const sortOrder = document.getElementById("watchedSort").value || "release_new";
         list.sort((a, b) => {
-          let dateA = new Date(a.date).getTime() || 0;
-          let dateB = new Date(b.date).getTime() || 0;
-          return sortOrder === "latest" ? dateB - dateA : dateA - dateB;
+          if(sortOrder === "release_new") {
+            return (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0);
+          } else if(sortOrder === "release_old") {
+            return (new Date(a.date).getTime() || 0) - (new Date(b.date).getTime() || 0);
+          } else if(sortOrder === "recent") {
+            return (b.added || 0) - (a.added || 0);
+          }
         });
         if (list.length === 0) {
           container.innerHTML = "<p>You haven't watched anything yet! How about a movie marathon?</p>";
@@ -596,6 +693,12 @@
         }
         list.forEach((m, idx) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
+          let extraInfo = "";
+          if(m.media_type === "tv") {
+            extraInfo = `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`;
+          } else {
+            extraInfo = `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
+          }
           const card = document.createElement("div");
           card.className = "card mb-3 media-card";
           card.innerHTML = `
@@ -608,6 +711,7 @@
                 <div class="card-body">
                   <h5 class="card-title">${m.title}</h5>
                   <p class="card-text"><small>${year}</small></p>
+                  ${extraInfo}
                   <p class="card-text"><small>${m.overview || "No synopsis available."}</small></p>
                   <p class="card-text"><small>Rating: ${m.rating} / 5</small></p>
                 </div>
@@ -626,7 +730,6 @@
         });
       }
 
-      // Rating Modal functionality
       let currentMarkIndex = null;
       const ratingModal = new bootstrap.Modal(document.getElementById("ratingModal"));
       function openRatingModal(index) {
@@ -654,7 +757,6 @@
         });
       });
 
-      // Live search with debounce
       function debounce(func, delay) {
         let timer;
         return function (...args) {
@@ -668,14 +770,107 @@
         else document.getElementById("searchResults").innerHTML = "";
       }, 500));
 
-      // Sort filter listeners
       document.getElementById("watchlistSort").addEventListener("change", renderWatchlist);
       document.getElementById("watchedSort").addEventListener("change", renderWatched);
 
-      // Initial render
       renderWatchlist();
       renderWatched();
       updateProfileHeader();
-    </script>
-  </body>
+    }
+
+    /* -------------------- DETAILS VIEW CODE -------------------- */
+    function loadDetails(mediaType, id) {
+      if (!mediaType || !id) {
+        document.getElementById("detailTitle").innerText = "Invalid Item";
+        return;
+      }
+      let apiUrl = "";
+      if (mediaType === "movie") {
+        apiUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
+      } else if (mediaType === "tv") {
+        apiUrl = `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
+      }
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
+        })
+        .then(details => {
+          renderDetails(details, mediaType);
+        })
+        .catch(error => {
+          console.error("Error fetching details:", error);
+          document.getElementById("detailTitle").innerText = "Error Loading Details";
+        });
+    }
+    function renderDetails(details, mediaType) {
+      const title = mediaType === "movie" ? details.title : details.name;
+      document.getElementById("detailTitle").innerText = title;
+      document.getElementById("detailDate").innerHTML = `<strong>Release Date:</strong> ${details.release_date || details.first_air_date || "N/A"}`;
+      if (details.genres && details.genres.length > 0) {
+        const genreNames = details.genres.map(g => g.name).join(', ');
+        document.getElementById("detailGenres").innerHTML = `<strong>Genres:</strong> ${genreNames}`;
+      } else {
+        document.getElementById("detailGenres").innerHTML = `<strong>Genres:</strong> N/A`;
+      }
+      document.getElementById("detailDuration").innerHTML = `<strong>Duration:</strong> ${
+        mediaType === "movie" ? (details.runtime ? (details.runtime / 60).toFixed(1) + "h" : "N/A") : 
+        (details.episode_run_time && details.episode_run_time.length > 0 ? (details.episode_run_time[0] / 60).toFixed(1) + "h" : "N/A")
+      }`;
+      document.getElementById("detailPopularity").innerHTML = `<strong>Popularity:</strong> ${details.popularity || "N/A"}`;
+      document.getElementById("detailRating").innerHTML = `<strong>Rating:</strong> ${details.vote_average ? details.vote_average + " / 10" : "N/A"}`;
+      document.getElementById("detailLanguage").innerHTML = `<strong>Language:</strong> ${details.original_language || "N/A"}`;
+      const posterUrl = details.poster_path ? `https://image.tmdb.org/t/p/w300${details.poster_path}` : 'https://via.placeholder.com/300x450';
+      document.getElementById("detailPoster").src = posterUrl;
+      document.getElementById("detailOverview").innerText = details.overview || "No description available.";
+
+      let castArray = [];
+      if(details.credits && details.credits.cast) {
+        castArray = details.credits.cast.slice(0, 8);
+      }
+      const castList = document.getElementById("castList");
+      castList.innerHTML = "";
+      castArray.forEach(actor => {
+        const castItem = document.createElement("div");
+        castItem.className = "cast-item";
+        const profileUrl = actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/60';
+        castItem.innerHTML = `
+          <img src="${profileUrl}" alt="${actor.name}">
+          <span>${actor.name}</span>
+        `;
+        castList.appendChild(castItem);
+      });
+
+      let durationVal = mediaType === "movie" 
+        ? (details.runtime ? (details.runtime / 60).toFixed(1) : "0")
+        : (details.episode_run_time && details.episode_run_time.length > 0 ? (details.episode_run_time[0] / 60).toFixed(1) : "0");
+      currentDetail = {
+        id: details.id,
+        media_type: mediaType,
+        title: title,
+        date: details.release_date || details.first_air_date || "",
+        poster: posterUrl,
+        watched: false,
+        rating: null,
+        overview: details.overview || "",
+        duration: durationVal,
+        added: Date.now()
+      };
+      if(mediaType === "tv") {
+        currentDetail.seasons = details.number_of_seasons || 0;
+        currentDetail.episodes = details.number_of_episodes || 0;
+      }
+    }
+    document.getElementById("addToWatchlistBtn").addEventListener("click", function () {
+      let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
+      if (!mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)) {
+        mediaList.push(currentDetail);
+        localStorage.setItem("mediaList", JSON.stringify(mediaList));
+        alert("Added to Watchlist!");
+      } else {
+        alert("Item already in Watchlist!");
+      }
+    });
+  </script>
+</body>
 </html>
