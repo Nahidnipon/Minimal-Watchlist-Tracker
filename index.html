@@ -5,20 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Media Watchlist</title>
   <!-- Google Fonts: Poppins -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
   <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- FontAwesome for icons -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
       --primary-color: #1abc9c;
@@ -33,6 +24,8 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       font-family: 'Poppins', sans-serif;
+      /* Ensure there’s enough bottom padding for the fixed nav */
+      padding-bottom: 80px;
     }
     /* ===================== MAIN APP STYLES ===================== */
     .app-container {
@@ -77,7 +70,6 @@
     }
     .app-content {
       padding: 16px;
-      padding-bottom: 80px; /* extra bottom space for nav */
     }
     .tab {
       display: none;
@@ -93,7 +85,7 @@
       border-radius: 8px;
       margin-bottom: 1rem;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       background: var(--card-bg);
@@ -101,7 +93,7 @@
     }
     .media-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .media-card img {
       width: 80px;
@@ -128,7 +120,7 @@
       border-radius: 12px;
       padding: 20px;
       text-align: center;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
       margin-top: 20px;
       background: var(--card-bg);
     }
@@ -162,42 +154,14 @@
       font-size: 0.9rem;
       color: #555;
     }
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 500px;
-      height: 60px;
-      background-color: var(--card-bg);
-      border-top: 1px solid #e1e4e8;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-      z-index: 100;
-    }
-    .nav-btn {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: var(--secondary-color);
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-    .nav-btn.active {
-      color: var(--primary-color);
-    }
     /* ===================== DETAILS VIEW STYLES ===================== */
     .details-container {
-      width: 100%;
       max-width: 500px;
       margin: 20px auto;
       background: var(--card-bg);
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       display: none;
     }
     .details-header {
@@ -219,18 +183,16 @@
       margin-bottom: 10px;
       color: var(--secondary-color);
     }
+    .details-info h3 {
+      margin: 10px 0 5px;
+      color: var(--secondary-color);
+      font-size: 1.2em;
+    }
     .details-meta {
-      display: flex;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
       font-size: 0.9em;
+      margin-bottom: 10px;
     }
     .details-meta div {
-      margin-right: 10px;
-      margin-bottom: 5px;
-    }
-    #detailDate {
-      margin-right: 10px;
       margin-bottom: 5px;
     }
     .details-cast {
@@ -243,6 +205,7 @@
     }
     .details-cast-list {
       display: flex;
+      flex-wrap: nowrap;
       overflow-x: auto;
       gap: 10px;
       padding-bottom: 10px;
@@ -269,7 +232,35 @@
       color: var(--secondary-color);
       font-size: 1.2em;
     }
-    /* Floating button now sits above the bottom nav */
+    /* ===================== FIXED BOTTOM NAVIGATION ===================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 500px;
+      height: 60px;
+      background-color: var(--card-bg);
+      border-top: 1px solid #e1e4e8;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .nav-btn.active {
+      color: var(--primary-color);
+    }
+    /* Floating Add to Watchlist Button (only in details view) */
     .floating-btn {
       position: fixed;
       bottom: 80px;
@@ -291,7 +282,7 @@
   </style>
 </head>
 <body>
-  <!-- ===================== MAIN APP VIEW ===================== -->
+  <!-- MAIN APP VIEW (Search, Watchlist, Watched, Profile) -->
   <div id="mainApp" class="app-container">
     <!-- Header -->
     <header class="app-header">
@@ -303,7 +294,6 @@
         </div>
       </div>
     </header>
-
     <!-- Content -->
     <main class="app-content">
       <!-- Watchlist Tab -->
@@ -321,12 +311,7 @@
       <div id="search" class="tab active-tab">
         <div class="search-group input-group">
           <span class="input-group-text"><i class="fas fa-search"></i></span>
-          <input
-            type="text"
-            id="searchQuery"
-            class="form-control"
-            placeholder="Search movies or series..."
-          />
+          <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series..." />
         </div>
         <div id="searchResults"></div>
       </div>
@@ -357,44 +342,6 @@
         </div>
       </div>
     </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
-        <i class="fas fa-bookmark"></i>
-      </button>
-      <button type="button" class="nav-btn active" data-tab="search" title="Search">
-        <i class="fas fa-search"></i>
-      </button>
-      <button type="button" class="nav-btn" data-tab="watched" title="Watched">
-        <i class="fas fa-eye"></i>
-      </button>
-      <button type="button" class="nav-btn" data-tab="profile" title="Profile">
-        <i class="fas fa-user"></i>
-      </button>
-    </nav>
-
-    <!-- Rating Modal -->
-    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="ratingModalLabel">Rate (out of 5 stars)</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center">
-            <div id="starRating" class="star-rating">
-              <i class="fas fa-star" data-value="1"></i>
-              <i class="fas fa-star" data-value="2"></i>
-              <i class="fas fa-star" data-value="3"></i>
-              <i class="fas fa-star" data-value="4"></i>
-              <i class="fas fa-star" data-value="5"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Edit Profile Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -425,13 +372,13 @@
     </div>
   </div>
 
-  <!-- ===================== DETAILS VIEW ===================== -->
+  <!-- DETAILS VIEW -->
   <div id="detailsApp" class="details-container">
     <div class="details-header">
       <img id="detailPoster" class="details-poster" src="" alt="Poster">
       <div class="details-info">
         <h1 id="detailTitle" class="details-title"></h1>
-        <h3 style="margin-top:10px; color: var(--secondary-color);">Information</h3>
+        <h3>Information</h3>
         <div class="details-meta" id="detailMeta">
           <div id="detailDate"><strong>Release Date:</strong> </div>
           <div id="detailGenres"><strong>Genres:</strong> </div>
@@ -456,14 +403,30 @@
     </button>
   </div>
 
+  <!-- FIXED BOTTOM NAVIGATION (Visible on all pages) -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
+      <i class="fas fa-bookmark"></i>
+    </button>
+    <button type="button" class="nav-btn active" data-tab="search" title="Search">
+      <i class="fas fa-search"></i>
+    </button>
+    <button type="button" class="nav-btn" data-tab="watched" title="Watched">
+      <i class="fas fa-eye"></i>
+    </button>
+    <button type="button" class="nav-btn" data-tab="profile" title="Profile">
+      <i class="fas fa-user"></i>
+    </button>
+  </nav>
+
   <!-- ===================== SCRIPTS ===================== -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Replace with your valid TMDB API key
-    const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd"; 
+    const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
     let currentDetail = null;
     
-    // Decide which view to show based on URL parameters
+    // Determine which view to show based on URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const mediaTypeParam = urlParams.get("media_type");
     const idParam = urlParams.get("id");
@@ -511,7 +474,7 @@
           `Watched: ${watchedCount} | Watchlisted: ${watchlistCount} | Watch Hours: ${totalWatchHours}h | Satisfaction: ${avgRating}`;
       }
 
-      // Bottom Navigation
+      // Bottom Navigation (Switch tabs)
       document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", function () {
           document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
@@ -524,7 +487,7 @@
         });
       });
 
-      // Profile edit
+      // Profile Edit Modal
       const profileModal = new bootstrap.Modal(document.getElementById("profileModal"));
       document.getElementById("profileEditBtn").addEventListener("click", function () {
         document.getElementById("editName").value = userProfile.name;
