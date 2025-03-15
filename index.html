@@ -30,7 +30,7 @@
     .app-container {
       max-width: 500px;
       margin: 0 auto;
-      padding: 0 16px; /* Added horizontal padding */
+      padding: 0 16px; /* Persistent left/right padding */
       position: relative;
       min-height: 100vh;
       background: var(--card-bg);
@@ -163,15 +163,13 @@
       margin-top: 20px;
       background: var(--card-bg);
     }
-    .profile-card .edit-icon {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    .edit-icon {
+      background: none;
+      border: none;
       font-size: 1.2rem;
       color: var(--primary-color);
       cursor: pointer;
     }
-    /* The edit-icon now uses data attributes for Bootstrap modal */
     .profile-card .profile-img {
       width: 100px;
       height: 100px;
@@ -335,7 +333,7 @@
       <div id="profileContainer" class="profile-container">
         <span id="profileName" class="d-none d-sm-inline">Default Name</span>
         <div id="profileImageContainer">
-          <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" loading="lazy" />
+          <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" loading="lazy">
         </div>
       </div>
     </header>
@@ -356,7 +354,7 @@
       <div id="search" class="tab active-tab">
         <div class="search-group input-group">
           <span class="input-group-text"><i class="fas fa-search"></i></span>
-          <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series..." />
+          <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series...">
         </div>
         <div id="searchResults"></div>
       </div>
@@ -374,17 +372,14 @@
       <!-- Profile Tab -->
       <div id="profile" class="tab">
         <div class="profile-card">
-          <!-- Using data-bs attributes so the modal pops up automatically -->
-          <div class="edit-icon" id="profileEditBtn" data-bs-toggle="modal" data-bs-target="#profileModal">
+          <button type="button" class="btn btn-link edit-icon" id="profileEditBtn" data-bs-toggle="modal" data-bs-target="#profileModal">
             <i class="fas fa-pencil-alt"></i>
-          </div>
+          </button>
           <div class="profile-img">
-            <img id="profileCardImage" src="https://via.placeholder.com/100" alt="Profile" loading="lazy" />
+            <img id="profileCardImage" src="https://via.placeholder.com/100" alt="Profile" loading="lazy">
           </div>
           <h4 class="profile-name" id="profileCardName">Default Name</h4>
-          <p class="profile-stats" id="profileStats">
-            Watched: 0 | Watchlisted: 0 | Watch Hours: 0h | Satisfaction: 0
-          </p>
+          <p class="profile-stats" id="profileStats">Watched: 0 | Watchlisted: 0 | Watch Hours: 0h | Satisfaction: 0</p>
         </div>
       </div>
     </main>
@@ -440,25 +435,21 @@
       </div>
     </div>
   </div>
-
   <!-- DETAILS VIEW (Overlay) -->
   <div id="detailsApp">
     <div class="details-container">
       <div class="details-header">
         <img id="detailPoster" class="details-poster" src="" alt="Poster" loading="lazy">
-        <!-- Plus button shows a single plus icon -->
-        <button class="btn-add-watchlist" id="addToWatchlistBtn">
-          <i class="fas fa-plus"></i>
-        </button>
+        <button class="btn-add-watchlist" id="addToWatchlistBtn"><i class="fas fa-plus"></i></button>
       </div>
       <h1 id="detailTitle" class="details-title"></h1>
       <div class="details-meta" id="detailMeta">
-        <div id="detailDate"><strong>Release:</strong> </div>
-        <div id="detailGenres"><strong>Genres:</strong> </div>
-        <div id="detailDuration"><strong>Duration:</strong> </div>
-        <div id="detailDirector"><strong>Director:</strong> </div>
-        <div id="detailLanguage"><strong>Language:</strong> </div>
-        <div id="detailRating"><strong>Rating:</strong> </div>
+        <div id="detailDate"><strong>Release:</strong></div>
+        <div id="detailGenres"><strong>Genres:</strong></div>
+        <div id="detailDuration"><strong>Duration:</strong></div>
+        <div id="detailDirector"><strong>Director:</strong></div>
+        <div id="detailLanguage"><strong>Language:</strong></div>
+        <div id="detailRating"><strong>Rating:</strong></div>
       </div>
       <div class="details-description">
         <h3>Description</h3>
@@ -470,7 +461,6 @@
       </div>
     </div>
   </div>
-
   <!-- FIXED BOTTOM NAVIGATION -->
   <nav class="bottom-nav">
     <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
@@ -486,23 +476,18 @@
       <i class="fas fa-user"></i>
     </button>
   </nav>
-
-  <!-- ===================== SCRIPTS ===================== -->
+  <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Replace with your valid TMDB API key
     const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
     let currentDetail = null;
     
-    // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const mediaTypeParam = urlParams.get("media_type");
     const idParam = urlParams.get("id");
 
-    // Always initialize the main app (it remains visible in the background)
+    // Initialize main app
     initMainApp();
-
-    // If details parameters exist, display the details view as an overlay
     if (mediaTypeParam && idParam) {
       document.getElementById("detailsApp").style.display = "block";
       loadDetails(mediaTypeParam, idParam);
@@ -510,30 +495,31 @@
       document.getElementById("detailsApp").style.display = "none";
     }
 
-    /* -------------------- GLOBAL BOTTOM NAVIGATION HANDLER -------------------- */
+    // Global bottom navigation
     document.querySelectorAll(".nav-btn").forEach(btn => {
       btn.addEventListener("click", function () {
-        // Hide details overlay if visible
         if (document.getElementById("detailsApp").style.display === "block") {
           document.getElementById("detailsApp").style.display = "none";
           history.pushState("", document.title, window.location.pathname);
         }
-        // Remove active class from all nav buttons
         document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
         this.classList.add("active");
-        // Switch active tab and re-render if needed
         const tab = this.getAttribute("data-tab");
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
         document.getElementById(tab).classList.add("active-tab");
         document.getElementById("currentTabTitle").innerText = this.title;
-        if(tab === "profile" && typeof renderProfile === "function") renderProfile();
-        if(tab === "watchlist" && typeof renderWatchlist === "function") renderWatchlist();
-        if(tab === "watched" && typeof renderWatched === "function") renderWatched();
+        if(tab === "profile") renderProfile();
+        if(tab === "watchlist") renderWatchlist();
+        if(tab === "watched") renderWatched();
       });
     });
 
-    /* -------------------- MAIN APP FUNCTIONS -------------------- */
     function initMainApp() {
+      function saveData(mediaList, activityLog, userProfile) {
+        localStorage.setItem("mediaList", JSON.stringify(mediaList));
+        localStorage.setItem("activityLog", JSON.stringify(activityLog));
+        localStorage.setItem("userProfile", JSON.stringify(userProfile));
+      }
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
       let userProfile = JSON.parse(localStorage.getItem("userProfile")) || {
@@ -541,13 +527,8 @@
         image: "https://via.placeholder.com/40"
       };
 
-      function saveData() {
-        localStorage.setItem("mediaList", JSON.stringify(mediaList));
-        localStorage.setItem("activityLog", JSON.stringify(activityLog));
-        localStorage.setItem("userProfile", JSON.stringify(userProfile));
-      }
-
       window.renderProfile = function() {
+        mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const watchedItems = mediaList.filter(m => m.watched);
         const watchlistItems = mediaList.filter(m => !m.watched);
         const watchedCount = watchedItems.length;
@@ -566,10 +547,8 @@
         document.getElementById("profileImage").src = userProfile.image;
       }
 
-      // Use Bootstrap's modal triggers for profile edit.
-      // When the profile modal is about to be shown, populate the fields.
       var profileModalEl = document.getElementById('profileModal');
-      profileModalEl.addEventListener('show.bs.modal', function (event) {
+      profileModalEl.addEventListener('show.bs.modal', function () {
         document.getElementById("editName").value = userProfile.name;
         document.getElementById("editImage").value = "";
         document.getElementById("profilePreview").style.display = "none";
@@ -595,7 +574,7 @@
           const reader = new FileReader();
           reader.onload = function (evt) {
             userProfile.image = evt.target.result;
-            saveData();
+            saveData(mediaList, activityLog, userProfile);
             updateProfileHeader();
             renderProfile();
             var modal = bootstrap.Modal.getInstance(profileModalEl);
@@ -603,7 +582,7 @@
           };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
-          saveData();
+          saveData(mediaList, activityLog, userProfile);
           updateProfileHeader();
           renderProfile();
           var modal = bootstrap.Modal.getInstance(profileModalEl);
@@ -642,7 +621,7 @@
           const card = document.createElement("div");
           card.className = "search-card";
           card.innerHTML = `
-            <img src="${posterUrl}" alt="${title}" loading="lazy" />
+            <img src="${posterUrl}" alt="${title}" loading="lazy">
             <div class="card-body">
               <h5 class="card-title">${title}</h5>
               <p class="card-text"><small>${year}</small></p>
@@ -662,6 +641,7 @@
       }
 
       function renderWatchlist() {
+        mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const container = document.getElementById("watchlistContainer");
         container.innerHTML = "";
         let list = mediaList.filter(m => !m.watched);
@@ -681,12 +661,9 @@
         }
         list.forEach((m, idx) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
-          let extraInfo = "";
-          if(m.media_type === "tv") {
-            extraInfo = `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`;
-          } else {
-            extraInfo = `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
-          }
+          let extraInfo = m.media_type === "tv" 
+            ? `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`
+            : `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
           const card = document.createElement("div");
           card.className = "card mb-3 media-card";
           card.innerHTML = `
@@ -708,10 +685,11 @@
           `;
           card.querySelector(".delete-btn").addEventListener("click", function (e) {
             e.stopPropagation();
-            const notWatched = mediaList.filter(m => !m.watched);
+            let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
+            const notWatched = updatedList.filter(m => !m.watched);
             const itemToDelete = notWatched[idx];
-            mediaList = mediaList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
-            saveData();
+            updatedList = updatedList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
+            localStorage.setItem("mediaList", JSON.stringify(updatedList));
             renderWatchlist();
           });
           card.querySelector(".mark-btn").addEventListener("click", function (e) {
@@ -725,6 +703,7 @@
       window.renderWatchlist = renderWatchlist;
 
       function renderWatched() {
+        mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const container = document.getElementById("watchedContainer");
         container.innerHTML = "";
         let list = mediaList.filter(m => m.watched);
@@ -744,12 +723,9 @@
         }
         list.forEach((m, idx) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
-          let extraInfo = "";
-          if(m.media_type === "tv") {
-            extraInfo = `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`;
-          } else {
-            extraInfo = `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
-          }
+          let extraInfo = m.media_type === "tv"
+            ? `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`
+            : `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
           const card = document.createElement("div");
           card.className = "card mb-3 media-card";
           card.innerHTML = `
@@ -771,10 +747,11 @@
           `;
           card.querySelector(".delete-btn").addEventListener("click", function (e) {
             e.stopPropagation();
-            const watchedItems = mediaList.filter(m => m.watched);
+            let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
+            const watchedItems = updatedList.filter(m => m.watched);
             const itemToDelete = watchedItems[idx];
-            mediaList = mediaList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
-            saveData();
+            updatedList = updatedList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
+            localStorage.setItem("mediaList", JSON.stringify(updatedList));
             renderWatched();
           });
           container.appendChild(card);
@@ -797,12 +774,13 @@
             if (val <= rating) s.classList.add("selected");
             else s.classList.remove("selected");
           });
-          const notWatched = mediaList.filter(m => !m.watched);
+          let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
+          const notWatched = updatedList.filter(m => !m.watched);
           const item = notWatched[currentMarkIndex];
-          const originalIndex = mediaList.findIndex(m => m.id === item.id && m.media_type === item.media_type);
-          mediaList[originalIndex].watched = true;
-          mediaList[originalIndex].rating = rating;
-          saveData();
+          const originalIndex = updatedList.findIndex(m => m.id === item.id && m.media_type === item.media_type);
+          updatedList[originalIndex].watched = true;
+          updatedList[originalIndex].rating = rating;
+          localStorage.setItem("mediaList", JSON.stringify(updatedList));
           ratingModal.hide();
           renderWatchlist();
           renderWatched();
@@ -830,18 +808,14 @@
       updateProfileHeader();
     }
 
-    /* -------------------- DETAILS VIEW FUNCTIONS -------------------- */
     function loadDetails(mediaType, id) {
       if (!mediaType || !id) {
         document.getElementById("detailTitle").innerText = "Invalid Item";
         return;
       }
-      let apiUrl = "";
-      if (mediaType === "movie") {
-        apiUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
-      } else if (mediaType === "tv") {
-        apiUrl = `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
-      }
+      let apiUrl = mediaType === "movie" 
+        ? `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`
+        : `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
       fetch(apiUrl)
         .then(response => {
           if (!response.ok) throw new Error("Network response was not ok");
@@ -866,24 +840,20 @@
         document.getElementById("detailGenres").innerHTML = `<strong>Genres:</strong> N/A`;
       }
       document.getElementById("detailDuration").innerHTML = `<strong>Duration:</strong> ${
-        mediaType === "movie" ? (details.runtime ? (details.runtime / 60).toFixed(1) + "h" : "N/A") : 
-        (details.episode_run_time && details.episode_run_time.length > 0 ? (details.episode_run_time[0] / 60).toFixed(1) + "h" : "N/A")
+        mediaType === "movie" ? (details.runtime ? (details.runtime / 60).toFixed(1) + "h" : "N/A")
+        : (details.episode_run_time && details.episode_run_time.length > 0 ? (details.episode_run_time[0] / 60).toFixed(1) + "h" : "N/A")
       }`;
       let director = "N/A";
-      if(details.credits && details.credits.crew) {
+      if (details.credits && details.credits.crew) {
         const directorObj = details.credits.crew.find(member => member.job === "Director");
-        if (directorObj) {
-          director = directorObj.name;
-        }
+        if (directorObj) director = directorObj.name;
       }
       document.getElementById("detailDirector").innerHTML = `<strong>Director:</strong> ${director}`;
       document.getElementById("detailLanguage").innerHTML = `<strong>Language:</strong> ${details.original_language || "N/A"}`;
       document.getElementById("detailRating").innerHTML = `<strong>Rating:</strong> ${details.vote_average ? details.vote_average + " / 10" : "N/A"}`;
       const posterUrl = details.poster_path ? `https://image.tmdb.org/t/p/w300${details.poster_path}` : 'https://via.placeholder.com/300x450';
       document.getElementById("detailPoster").src = posterUrl;
-      
       document.getElementById("detailOverview").innerText = details.overview || "No description available.";
-
       let durationVal = mediaType === "movie" 
         ? (details.runtime ? (details.runtime / 60).toFixed(1) : "0")
         : (details.episode_run_time && details.episode_run_time.length > 0 ? (details.episode_run_time[0] / 60).toFixed(1) : "0");
@@ -903,8 +873,6 @@
         currentDetail.seasons = details.number_of_seasons || 0;
         currentDetail.episodes = details.number_of_episodes || 0;
       }
-      
-      // Render cast
       let castArray = [];
       if(details.credits && details.credits.cast) {
         castArray = details.credits.cast.slice(0, 8);
@@ -929,10 +897,8 @@
         mediaList.push(currentDetail);
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
       }
-      // Hide details overlay and update URL
       document.getElementById("detailsApp").style.display = "none";
       history.pushState("", document.title, window.location.pathname);
-      // Switch to watchlist tab and re-render in real time
       document.querySelector('.nav-btn[data-tab="watchlist"]').click();
       if(window.renderWatchlist) window.renderWatchlist();
     });
