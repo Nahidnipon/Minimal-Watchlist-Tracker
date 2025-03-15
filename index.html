@@ -18,6 +18,10 @@
       --card-bg: #fff;
       --text-color: #333;
     }
+    /* Hide all modal backdrops */
+    .modal-backdrop {
+      display: none !important;
+    }
     body {
       margin: 0;
       padding: 0;
@@ -322,9 +326,20 @@
       text-align: center;
       padding: 20px;
     }
+    /* ------------------ MESSAGE CONTAINER ------------------ */
+    #messageContainer {
+      position: fixed;
+      top: 80px;
+      width: 100%;
+      text-align: center;
+      z-index: 500;
+    }
   </style>
 </head>
 <body>
+  <!-- Message container for watchlist notifications -->
+  <div id="messageContainer"></div>
+
   <!-- MAIN APP VIEW -->
   <div id="mainApp" class="app-container">
     <!-- Header -->
@@ -495,7 +510,7 @@
       document.getElementById("detailsApp").style.display = "none";
     }
 
-    // Global bottom navigation
+    // Global bottom navigation handler (without auto-refresh)
     document.querySelectorAll(".nav-btn").forEach(btn => {
       btn.addEventListener("click", function () {
         if (document.getElementById("detailsApp").style.display === "block") {
@@ -513,6 +528,23 @@
         if(tab === "watched") renderWatched();
       });
     });
+
+    // Show a temporary message (3 seconds)
+    function showMessage(msg) {
+      const container = document.getElementById("messageContainer");
+      const messageDiv = document.createElement("div");
+      messageDiv.style.background = "rgba(0,0,0,0.7)";
+      messageDiv.style.color = "#fff";
+      messageDiv.style.padding = "10px 20px";
+      messageDiv.style.margin = "10px auto";
+      messageDiv.style.borderRadius = "5px";
+      messageDiv.style.display = "inline-block";
+      messageDiv.innerText = msg;
+      container.appendChild(messageDiv);
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 3000);
+    }
 
     function initMainApp() {
       function saveData(mediaList, activityLog, userProfile) {
@@ -896,11 +928,14 @@
       if (!mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)) {
         mediaList.push(currentDetail);
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
+        showMessage(`${currentDetail.title} added to your watchlist`);
+      } else {
+        showMessage(`${currentDetail.title} is already in your watchlist`);
       }
       document.getElementById("detailsApp").style.display = "none";
       history.pushState("", document.title, window.location.pathname);
+      // Switch to watchlist tab and re-render
       document.querySelector('.nav-btn[data-tab="watchlist"]').click();
-      if(window.renderWatchlist) window.renderWatchlist();
     });
   </script>
 </body>
