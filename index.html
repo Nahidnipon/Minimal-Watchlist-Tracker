@@ -154,83 +154,95 @@
       font-size: 0.9rem;
       color: #555;
     }
-    /* ===================== DETAILS VIEW STYLES ===================== */
+    /* ===================== DETAILS VIEW STYLES (UPDATED) ===================== */
     .details-container {
       max-width: 500px;
       margin: 20px auto;
-      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 40px);
       padding: 20px;
+      padding-bottom: 60px;
+      background: var(--card-bg);
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      display: none;
     }
     .details-header {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 20px;
+      text-align: center;
     }
     .details-poster {
-      width: 150px;
-      margin-right: 20px;
+      display: block;
+      margin: 0 auto 10px;
+      width: 180px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .details-info {
-      flex-grow: 1;
     }
     .details-title {
       font-size: 1.8em;
       margin-bottom: 10px;
       color: var(--secondary-color);
+      text-align: center;
     }
-    .details-info h3 {
-      margin: 10px 0 5px;
-      color: var(--secondary-color);
-      font-size: 1.2em;
-    }
+    /* Updated metadata styles */
     .details-meta {
-      font-size: 0.9em;
-      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.95em;
+      padding: 12px 0;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
     }
     .details-meta div {
-      margin-bottom: 5px;
+      flex: 1;
+      min-width: 45%;
+      background: #f8f9fa;
+      padding: 8px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .details-description {
+      padding-top: 10px;
+      font-size: 0.95em;
+      color: #555;
     }
     .details-cast {
-      margin-bottom: 20px;
-    }
-    .details-cast h3 {
-      margin-bottom: 10px;
-      color: var(--secondary-color);
-      font-size: 1.2em;
+      margin-top: 15px;
     }
     .details-cast-list {
       display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
       gap: 10px;
+      overflow-x: auto;
       padding-bottom: 10px;
     }
     .cast-item {
-      flex: 0 0 auto;
       text-align: center;
+      flex: 0 0 auto;
     }
     .cast-item img {
       width: 60px;
       height: 60px;
       border-radius: 50%;
       object-fit: cover;
-      margin-bottom: 5px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .details-description {
-      line-height: 1.6;
-      color: #555;
-      font-size: 0.9em;
+    .details-actions {
+      text-align: center;
+      margin-top: 10px;
     }
-    .details-description h3 {
-      margin-bottom: 10px;
-      color: var(--secondary-color);
-      font-size: 1.2em;
+    .btn-add-watchlist {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+    .btn-add-watchlist:hover {
+      background-color: #17a589;
     }
     /* ===================== FIXED BOTTOM NAVIGATION ===================== */
     .bottom-nav {
@@ -260,24 +272,10 @@
     .nav-btn.active {
       color: var(--primary-color);
     }
-    /* Floating Add to Watchlist Button (only in details view) */
-    .floating-btn {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--primary-color);
-      color: #fff;
-      border: none;
-      border-radius: 30px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      cursor: pointer;
-      z-index: 101;
-    }
-    .floating-btn:hover {
-      background-color: #17a589;
+    /* Loading Spinner */
+    .spinner {
+      text-align: center;
+      padding: 20px;
     }
   </style>
 </head>
@@ -290,7 +288,7 @@
       <div id="profileContainer" class="profile-container">
         <span id="profileName" class="d-none d-sm-inline">Default Name</span>
         <div id="profileImageContainer">
-          <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" />
+          <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" loading="lazy" />
         </div>
       </div>
     </header>
@@ -333,7 +331,7 @@
             <i class="fas fa-pencil-alt"></i>
           </div>
           <div class="profile-img">
-            <img id="profileCardImage" src="https://via.placeholder.com/100" alt="Profile" />
+            <img id="profileCardImage" src="https://via.placeholder.com/100" alt="Profile" loading="lazy" />
           </div>
           <h4 class="profile-name" id="profileCardName">Default Name</h4>
           <p class="profile-stats" id="profileStats">
@@ -370,37 +368,56 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- DETAILS VIEW -->
-  <div id="detailsApp" class="details-container">
-    <div class="details-header">
-      <img id="detailPoster" class="details-poster" src="" alt="Poster">
-      <div class="details-info">
-        <h1 id="detailTitle" class="details-title"></h1>
-        <h3>Information</h3>
-        <div class="details-meta" id="detailMeta">
-          <div id="detailDate"><strong>Release Date:</strong> </div>
-          <div id="detailGenres"><strong>Genres:</strong> </div>
-          <div id="detailDuration"><strong>Duration:</strong> </div>
-          <div id="detailPopularity"><strong>Popularity:</strong> </div>
-          <div id="detailRating"><strong>Rating:</strong> </div>
-          <div id="detailLanguage"><strong>Language:</strong> </div>
+    <!-- Rating Modal -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ratingModalLabel">Rate This Media</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="starRating" class="d-flex justify-content-center">
+              <i class="fas fa-star" data-value="1" style="cursor:pointer;"></i>
+              <i class="fas fa-star" data-value="2" style="cursor:pointer;"></i>
+              <i class="fas fa-star" data-value="3" style="cursor:pointer;"></i>
+              <i class="fas fa-star" data-value="4" style="cursor:pointer;"></i>
+              <i class="fas fa-star" data-value="5" style="cursor:pointer;"></i>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
-    <div class="details-cast">
-      <h3>Cast</h3>
-      <div id="castList" class="details-cast-list"></div>
+  </div>
+
+  <!-- DETAILS VIEW (UPDATED) -->
+  <div id="detailsApp" class="details-container">
+    <div class="details-header">
+      <img id="detailPoster" class="details-poster" src="" alt="Poster" loading="lazy">
+      <button class="btn-add-watchlist" id="addToWatchlistBtn">
+        <i class="fas fa-plus"></i> + Watchlist
+      </button>
+    </div>
+    <h1 id="detailTitle" class="details-title"></h1>
+    <div class="details-meta" id="detailMeta">
+      <div id="detailDate"><strong>Release:</strong> </div>
+      <div id="detailGenres"><strong>Genres:</strong> </div>
+      <div id="detailDuration"><strong>Duration:</strong> </div>
+      <div id="detailDirector"><strong>Director:</strong> </div>
+      <div id="detailLanguage"><strong>Language:</strong> </div>
+      <div id="detailRating"><strong>Rating:</strong> </div>
     </div>
     <div class="details-description">
       <h3>Description</h3>
       <p id="detailOverview"></p>
     </div>
-    <!-- Floating Add to Watchlist Button -->
-    <button class="floating-btn" id="addToWatchlistBtn">
-      <i class="fas fa-plus"></i> Add to Watchlist
-    </button>
+    <div class="details-cast">
+      <h3>Cast</h3>
+      <div id="castList" class="details-cast-list"></div>
+    </div>
   </div>
 
   <!-- FIXED BOTTOM NAVIGATION (Visible on all pages) -->
@@ -531,6 +548,8 @@
       });
 
       async function performSearch(query) {
+        const resultsContainer = document.getElementById("searchResults");
+        resultsContainer.innerHTML = '<div class="spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
         const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
         try {
           const response = await fetch(url);
@@ -539,11 +558,11 @@
           if (data.results && Array.isArray(data.results)) {
             renderSearchResults(data.results);
           } else {
-            document.getElementById("searchResults").innerHTML = "<p>No results found. Try another search!</p>";
+            resultsContainer.innerHTML = "<p>No results found. Try another search!</p>";
           }
         } catch (error) {
           console.error("Search error:", error);
-          document.getElementById("searchResults").innerHTML = "<p>Error fetching search results.</p>";
+          resultsContainer.innerHTML = "<p>Error fetching search results.</p>";
         }
       }
 
@@ -561,7 +580,7 @@
           card.innerHTML = `
             <div class="row g-0">
               <div class="col-auto">
-                <img src="${posterUrl}" alt="${title}" class="img-fluid" />
+                <img src="${posterUrl}" alt="${title}" class="img-fluid" loading="lazy" />
               </div>
               <div class="col">
                 <div class="card-body">
@@ -614,7 +633,7 @@
             <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
-                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;" loading="lazy">
               </div>
               <div class="col">
                 <div class="card-body">
@@ -676,7 +695,7 @@
             <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
-                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;" loading="lazy">
               </div>
               <div class="col">
                 <div class="card-body">
@@ -749,7 +768,7 @@
       updateProfileHeader();
     }
 
-    /* -------------------- DETAILS VIEW CODE -------------------- */
+    /* -------------------- DETAILS VIEW CODE (UPDATED) -------------------- */
     function loadDetails(mediaType, id) {
       if (!mediaType || !id) {
         document.getElementById("detailTitle").innerText = "Invalid Item";
@@ -777,7 +796,7 @@
     function renderDetails(details, mediaType) {
       const title = mediaType === "movie" ? details.title : details.name;
       document.getElementById("detailTitle").innerText = title;
-      document.getElementById("detailDate").innerHTML = `<strong>Release Date:</strong> ${details.release_date || details.first_air_date || "N/A"}`;
+      document.getElementById("detailDate").innerHTML = `<strong>Release:</strong> ${details.release_date || details.first_air_date || "N/A"}`;
       if (details.genres && details.genres.length > 0) {
         const genreNames = details.genres.map(g => g.name).join(', ');
         document.getElementById("detailGenres").innerHTML = `<strong>Genres:</strong> ${genreNames}`;
@@ -788,29 +807,21 @@
         mediaType === "movie" ? (details.runtime ? (details.runtime / 60).toFixed(1) + "h" : "N/A") : 
         (details.episode_run_time && details.episode_run_time.length > 0 ? (details.episode_run_time[0] / 60).toFixed(1) + "h" : "N/A")
       }`;
-      document.getElementById("detailPopularity").innerHTML = `<strong>Popularity:</strong> ${details.popularity || "N/A"}`;
-      document.getElementById("detailRating").innerHTML = `<strong>Rating:</strong> ${details.vote_average ? details.vote_average + " / 10" : "N/A"}`;
+      // Remove popularity and add director
+      let director = "N/A";
+      if(details.credits && details.credits.crew) {
+        const directorObj = details.credits.crew.find(member => member.job === "Director");
+        if (directorObj) {
+          director = directorObj.name;
+        }
+      }
+      document.getElementById("detailDirector").innerHTML = `<strong>Director:</strong> ${director}`;
       document.getElementById("detailLanguage").innerHTML = `<strong>Language:</strong> ${details.original_language || "N/A"}`;
+      document.getElementById("detailRating").innerHTML = `<strong>Rating:</strong> ${details.vote_average ? details.vote_average + " / 10" : "N/A"}`;
       const posterUrl = details.poster_path ? `https://image.tmdb.org/t/p/w300${details.poster_path}` : 'https://via.placeholder.com/300x450';
       document.getElementById("detailPoster").src = posterUrl;
+      
       document.getElementById("detailOverview").innerText = details.overview || "No description available.";
-
-      let castArray = [];
-      if(details.credits && details.credits.cast) {
-        castArray = details.credits.cast.slice(0, 8);
-      }
-      const castList = document.getElementById("castList");
-      castList.innerHTML = "";
-      castArray.forEach(actor => {
-        const castItem = document.createElement("div");
-        castItem.className = "cast-item";
-        const profileUrl = actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/60';
-        castItem.innerHTML = `
-          <img src="${profileUrl}" alt="${actor.name}">
-          <span>${actor.name}</span>
-        `;
-        castList.appendChild(castItem);
-      });
 
       let durationVal = mediaType === "movie" 
         ? (details.runtime ? (details.runtime / 60).toFixed(1) : "0")
@@ -831,6 +842,24 @@
         currentDetail.seasons = details.number_of_seasons || 0;
         currentDetail.episodes = details.number_of_episodes || 0;
       }
+      
+      // Render cast
+      let castArray = [];
+      if(details.credits && details.credits.cast) {
+        castArray = details.credits.cast.slice(0, 8);
+      }
+      const castList = document.getElementById("castList");
+      castList.innerHTML = "";
+      castArray.forEach(actor => {
+        const castItem = document.createElement("div");
+        castItem.className = "cast-item";
+        const profileUrl = actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/60';
+        castItem.innerHTML = `
+          <img src="${profileUrl}" alt="${actor.name}" loading="lazy">
+          <span>${actor.name}</span>
+        `;
+        castList.appendChild(castItem);
+      });
     }
     document.getElementById("addToWatchlistBtn").addEventListener("click", function () {
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
