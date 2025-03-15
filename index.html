@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TV Series Watchlist</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .section { display: none; }
+    .active-section { display: block; }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Watchlist</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" href="#" data-section="search">Search Series</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-section="watchlist">Watchlist</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-section="watched">Watched</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-section="profile">Profile</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container mt-3">
+    <!-- Search Section -->
+    <div id="search" class="section active-section">
+      <h2>Search Series</h2>
+      <div class="input-group mb-3">
+        <input type="text" id="searchQuery" class="form-control" placeholder="Enter series title">
+        <button class="btn btn-primary" id="searchBtn">Search</button>
+      </div>
+      <div id="searchResults" class="row"></div>
+    </div>
+
+    <!-- Watchlist Section -->
+    <div id="watchlist" class="section">
+      <h2>Watchlist</h2>
+      <div id="watchlistContainer" class="row"></div>
+    </div>
+
+    <!-- Watched Section -->
+    <div id="watched" class="section">
+      <h2>Watched Series</h2>
+      <div id="watchedContainer" class="row"></div>
+    </div>
+
+    <!-- Profile Section -->
+    <div id="profile" class="section">
+      <h2>Profile</h2>
+      <div class="mb-3">
+        <label for="userName" class="form-label">Name:</label>
+        <input type="text" id="userName" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="profilePic" class="form-label">Profile Picture URL:</label>
+        <input type="text" id="profilePic" class="form-control">
+      </div>
+      <button class="btn btn-success" id="saveProfile">Save Profile</button>
+      <hr>
+      <h4>Stats</h4>
+      <p id="stats"></p>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Main JavaScript -->
+  <script>
+    // IMPORTANT: Replace the placeholder below with your TMDB API key.
+    // The key you provided (fb799eb4) is for OMDb and will not work here.
+    const TMDB_API_KEY = 'YOUR_TMDB_API_KEY';
+
+    // Retrieve stored data or initialize defaults
+    let movies = JSON.parse(localStorage.getItem('movies')) || [];
+    let user = JSON.parse(localStorage.getItem('user')) || { name: 'Your Name', profilePic: '' };
+
+    function saveData() {
+      localStorage.setItem('movies', JSON.stringify(movies));
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    // Render search results using TMDB API data
+    function renderSearchResults(results) {
+      const container = document.getElementById('searchResults');
+      container.innerHTML = '';
+      results.forEach(item => {
+        const col = document.createElement('div');
+        col.className = 'col-12 mb-3';
+        // Build full poster URL using TMDB's image base URL
+        let posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/150';
+        col.innerHTML = `
+          <div class="card">
+            <div class="row g-0">
+              <div class="col-4">
+                <img src="${posterUrl}" class="img-fluid rounded-start" alt="${item.name}">
+              </div>
+              <div class="col-8">
+                <div class="card-body">
+                  <h5 class="card-title">${item.name}</h5>
+                  <p class="card-text">First Air Date: ${item.first_air_date ? item.first_air_date.substring(0, 4) : 'N/A'}</p>
+                  <button class="btn btn-primary add-btn" 
+                    data-id="${item.id}" 
+                    data-name="${item.name}" 
+                    data-first_air_date="${item.first_air_date}" 
+                    data-poster="${posterUrl}">
+                    Add to Watchlist
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+      // Attach event listeners to "Add to Watchlist" buttons
+      document.querySelectorAll('.add-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          const name = this.getAttribute('data-name');
+          const firstAirDate = this.getAttribute('data-first_air_date');
+          const poster = this.getAttribute('data-poster');
+          if (!movies.find(m => m.id === id)) {
+            movies.push({ id, name, firstAirDate, poster, watched: false, rating: null });
+            saveData();
+            alert('Added to Watchlist!');
+            renderWatchlist();
+          } else {
+            alert('Already in watchlist!');
+          }
+        });
+      });
+    }
+
+    // Perform search using TMDB API
+    async function performSearch(query) {
+      const url = `https://api.themoviedb.org/3/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+          renderSearchResults(data.results);
+        } else {
+          document.getElementById('searchResults').innerHTML = `<p>No results found.</p>`;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Render the Watchlist (series not yet watched)
+    function renderWatchlist() {
+      const container = document.getElementById('watchlistContainer');
+      container.innerHTML = '';
+      const watchlistMovies = movies.filter(m => !m.watched);
+      if (watchlistMovies.length === 0) {
+        container.innerHTML = '<p>No series in watchlist.</p>';
+        return;
+      }
+      watchlistMovies.forEach((m, index) => {
+        const col = document.createElement('div');
+        col.className = 'col-12 mb-3';
+        col.innerHTML = `
+          <div class="card">
+            <div class="row g-0">
+              <div class="col-4">
+                <img src="${m.poster}" class="img-fluid rounded-start" alt="${m.name}">
+              </div>
+              <div class="col-8">
+                <div class="card-body">
+                  <h5 class="card-title">${m.name}</h5>
+                  <p class="card-text">First Air Date: ${m.firstAirDate ? m.firstAirDate.substring(0, 4) : 'N/A'}</p>
+                  <button class="btn btn-success mark-watched-btn" data-index="${index}">Mark as Watched</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+      // Attach event listeners for "Mark as Watched"
+      document.querySelectorAll('.mark-watched-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = this.getAttribute('data-index');
+          let rating = prompt('Enter rating (0-100):');
+          rating = parseInt(rating);
+          if (!isNaN(rating) && rating >= 0 && rating <= 100) {
+            // Find the movie in the overall list and update it
+            let notWatched = movies.filter(m => !m.watched);
+            const movieToMark = notWatched[index];
+            const originalIndex = movies.findIndex(m => m.id === movieToMark.id);
+            movies[originalIndex].watched = true;
+            movies[originalIndex].rating = rating;
+            saveData();
+            renderWatchlist();
+            renderWatched();
+            renderProfileStats();
+          } else {
+            alert('Invalid rating!');
+          }
+        });
+      });
+    }
+
+    // Render Watched Series (with rating)
+    function renderWatched() {
+      const container = document.getElementById('watchedContainer');
+      container.innerHTML = '';
+      const watchedMovies = movies.filter(m => m.watched);
+      if (watchedMovies.length === 0) {
+        container.innerHTML = '<p>No watched series.</p>';
+        return;
+      }
+      watchedMovies.forEach(m => {
+        const col = document.createElement('div');
+        col.className = 'col-12 mb-3';
+        col.innerHTML = `
+          <div class="card">
+            <div class="row g-0">
+              <div class="col-4">
+                <img src="${m.poster}" class="img-fluid rounded-start" alt="${m.name}">
+              </div>
+              <div class="col-8">
+                <div class="card-body">
+                  <h5 class="card-title">${m.name}</h5>
+                  <p class="card-text">First Air Date: ${m.firstAirDate ? m.firstAirDate.substring(0, 4) : 'N/A'}</p>
+                  <p class="card-text">Rating: ${m.rating}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+    }
+
+    // Render Profile information and stats
+    function renderProfile() {
+      document.getElementById('userName').value = user.name;
+      document.getElementById('profilePic').value = user.profilePic;
+      renderProfileStats();
+    }
+
+    // Calculate and render watched count and average rating
+    function renderProfileStats() {
+      const watchedMovies = movies.filter(m => m.watched);
+      const count = watchedMovies.length;
+      let avg = 0;
+      if (count > 0) {
+        avg = watchedMovies.reduce((acc, m) => acc + m.rating, 0) / count;
+        avg = avg.toFixed(1);
+      }
+      document.getElementById('stats').innerText = `Watched Series: ${count} | Average Rating: ${avg}%`;
+    }
+
+    // Navigation: show/hide sections based on nav click
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        const section = this.getAttribute('data-section');
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
+        document.getElementById(section).classList.add('active-section');
+        if (section === 'profile') renderProfile();
+      });
+    });
+
+    // Search button event
+    document.getElementById('searchBtn').addEventListener('click', function() {
+      const query = document.getElementById('searchQuery').value;
+      if (query.trim() !== '') performSearch(query);
+    });
+
+    // Save profile event
+    document.getElementById('saveProfile').addEventListener('click', function() {
+      user.name = document.getElementById('userName').value;
+      user.profilePic = document.getElementById('profilePic').value;
+      saveData();
+      alert('Profile saved!');
+      renderProfileStats();
+    });
+
+    // Initial rendering
+    renderWatchlist();
+    renderWatched();
+    renderProfileStats();
+  </script>
+</body>
+</html>
