@@ -30,7 +30,7 @@
     .app-container {
       max-width: 500px;
       margin: 0 auto;
-      padding: 0 16px; /* Added left/right padding */
+      padding: 0 16px; /* Added horizontal padding */
       position: relative;
       min-height: 100vh;
       background: var(--card-bg);
@@ -171,6 +171,7 @@
       color: var(--primary-color);
       cursor: pointer;
     }
+    /* The edit-icon now uses data attributes for Bootstrap modal */
     .profile-card .profile-img {
       width: 100px;
       height: 100px;
@@ -373,7 +374,8 @@
       <!-- Profile Tab -->
       <div id="profile" class="tab">
         <div class="profile-card">
-          <div class="edit-icon" id="profileEditBtn">
+          <!-- Using data-bs attributes so the modal pops up automatically -->
+          <div class="edit-icon" id="profileEditBtn" data-bs-toggle="modal" data-bs-target="#profileModal">
             <i class="fas fa-pencil-alt"></i>
           </div>
           <div class="profile-img">
@@ -444,7 +446,7 @@
     <div class="details-container">
       <div class="details-header">
         <img id="detailPoster" class="details-poster" src="" alt="Poster" loading="lazy">
-        <!-- Plus button now only shows a plus icon -->
+        <!-- Plus button shows a single plus icon -->
         <button class="btn-add-watchlist" id="addToWatchlistBtn">
           <i class="fas fa-plus"></i>
         </button>
@@ -519,13 +521,14 @@
         // Remove active class from all nav buttons
         document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
         this.classList.add("active");
-        // Switch active tab
+        // Switch active tab and re-render if needed
         const tab = this.getAttribute("data-tab");
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
         document.getElementById(tab).classList.add("active-tab");
         document.getElementById("currentTabTitle").innerText = this.title;
-        // If switching to profile, update profile info
         if(tab === "profile" && typeof renderProfile === "function") renderProfile();
+        if(tab === "watchlist" && typeof renderWatchlist === "function") renderWatchlist();
+        if(tab === "watched" && typeof renderWatched === "function") renderWatched();
       });
     });
 
@@ -563,13 +566,13 @@
         document.getElementById("profileImage").src = userProfile.image;
       }
 
-      // Profile Edit Modal
-      const profileModal = new bootstrap.Modal(document.getElementById("profileModal"));
-      document.getElementById("profileEditBtn").addEventListener("click", function () {
+      // Use Bootstrap's modal triggers for profile edit.
+      // When the profile modal is about to be shown, populate the fields.
+      var profileModalEl = document.getElementById('profileModal');
+      profileModalEl.addEventListener('show.bs.modal', function (event) {
         document.getElementById("editName").value = userProfile.name;
         document.getElementById("editImage").value = "";
         document.getElementById("profilePreview").style.display = "none";
-        profileModal.show();
       });
 
       document.getElementById("editImage").addEventListener("change", function (e) {
@@ -595,14 +598,16 @@
             saveData();
             updateProfileHeader();
             renderProfile();
-            profileModal.hide();
+            var modal = bootstrap.Modal.getInstance(profileModalEl);
+            modal.hide();
           };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
           saveData();
           updateProfileHeader();
           renderProfile();
-          profileModal.hide();
+          var modal = bootstrap.Modal.getInstance(profileModalEl);
+          modal.hide();
         }
       });
 
@@ -651,7 +656,6 @@
       }
 
       function openDetailsPage(id, mediaType) {
-        // Update URL parameters without reloading the page
         history.pushState({}, "", `?media_type=${mediaType}&id=${id}`);
         document.getElementById("detailsApp").style.display = "block";
         loadDetails(mediaType, id);
@@ -718,6 +722,7 @@
           container.appendChild(card);
         });
       }
+      window.renderWatchlist = renderWatchlist;
 
       function renderWatched() {
         const container = document.getElementById("watchedContainer");
@@ -775,6 +780,7 @@
           container.appendChild(card);
         });
       }
+      window.renderWatched = renderWatched;
 
       let currentMarkIndex = null;
       const ratingModal = new bootstrap.Modal(document.getElementById("ratingModal"));
@@ -916,7 +922,6 @@
         castList.appendChild(castItem);
       });
     }
-    // Modified Add to Watchlist: saves the item and then switches to the Watchlist tab
     document.getElementById("addToWatchlistBtn").addEventListener("click", function () {
       if (!currentDetail) return;
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
@@ -927,8 +932,9 @@
       // Hide details overlay and update URL
       document.getElementById("detailsApp").style.display = "none";
       history.pushState("", document.title, window.location.pathname);
-      // Automatically switch to the Watchlist tab
+      // Switch to watchlist tab and re-render in real time
       document.querySelector('.nav-btn[data-tab="watchlist"]').click();
+      if(window.renderWatchlist) window.renderWatchlist();
     });
   </script>
 </body>
