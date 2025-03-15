@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Media Watchlist</title>
+    <!-- Google Fonts: Poppins -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -15,60 +20,62 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
-      /* Global Light Theme */
+      /* Global Styles */
       body {
-        background-color: #f8f9fa;
-        color: #212529;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+        color: #333;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
       }
-      .main-container {
-        display: flex;
-        max-width: 768px;
+      /* App Container */
+      .app-container {
+        max-width: 500px;
         margin: 0 auto;
+        position: relative;
         min-height: 100vh;
-        border: 1px solid #dee2e6;
+        background: #fff;
       }
-      /* Sidebar */
-      .sidebar {
-        width: 200px;
-        background-color: #e9ecef;
-        padding: 20px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-      }
-      /* Sidebar Profile (replaces app title) */
-      .sidebar-profile {
+      /* Header */
+      .app-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e1e4e8;
+        background-color: #fff;
       }
-      .sidebar-profile img {
+      #currentTabTitle {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      /* Profile Container (Name left of image) */
+      .profile-container {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      #profileName {
+        margin-right: 10px;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+      #profileImageContainer {
         width: 40px;
         height: 40px;
         border-radius: 50%;
+        overflow: hidden;
+        background-color: #ddd;
+      }
+      #profileImageContainer img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-        margin-right: 10px;
-      }
-      .sidebar-profile span {
-        font-weight: 600;
-        color: #212529;
-      }
-      .nav-link {
-        display: block;
-        color: #495057;
-        padding: 10px;
-        margin-bottom: 10px;
-        text-decoration: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      .nav-link:hover,
-      .nav-link.active {
-        background-color: #ced4da;
       }
       /* Content Area */
-      .content {
-        flex: 1;
-        padding: 20px;
+      .app-content {
+        padding: 16px;
+        padding-bottom: 80px; /* extra bottom padding for nav */
       }
       .tab {
         display: none;
@@ -78,48 +85,48 @@
       }
       /* Search Box */
       .search-group {
-        max-width: 100%;
         margin-bottom: 1rem;
       }
       /* Media Cards */
       .media-card {
-        border: none;
-        border-radius: 5px;
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
         margin-bottom: 1rem;
         overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
         cursor: pointer;
         position: relative;
+      }
+      .media-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
       .media-card img {
         width: 80px;
         height: 120px;
         object-fit: cover;
       }
-      .media-card .card-body {
-        padding: 0.5rem;
+      .media-card .delete-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: none;
+        border: none;
+        color: #e74c3c;
+        font-size: 1rem;
+        opacity: 0.7;
+        transition: opacity 0.3s;
       }
-      /* Details Modal image */
+      .media-card .delete-btn:hover {
+        opacity: 1;
+      }
+      /* Modal Image */
       #detailsPoster {
         width: 100%;
         max-width: 300px;
       }
-      /* Profile Section */
-      .profile-card {
-        max-width: 100%;
-      }
-      #profileName.placeholder {
-        font-style: italic;
-        color: #6c757d;
-      }
-      /* Metrics Styling */
-      .metrics {
-        font-size: 0.9rem;
-      }
-      .metrics .metric-item {
-        margin-bottom: 0.3rem;
-      }
-      /* Rating Stars with left-to-right animation */
+      /* Star Rating */
       .star-rating i {
         font-size: 2rem;
         color: #ccc;
@@ -127,7 +134,7 @@
         transition: transform 0.2s ease, color 0.2s ease;
       }
       .star-rating i.selected {
-        color: #ff9800;
+        color: #f1c40f;
         animation: slideIn 0.3s forwards;
       }
       @keyframes slideIn {
@@ -140,44 +147,60 @@
           transform: translateX(0);
         }
       }
-      .star-rating i:hover,
-      .star-rating i:hover ~ i {
-        color: #ffb74d;
+      /* Bottom Navigation */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 500px;
+        height: 60px;
+        background-color: #fff;
+        border-top: 1px solid #e1e4e8;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 100;
       }
-      /* Button Improvements */
+      .nav-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #333;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+      .nav-btn.active {
+        color: #1abc9c;
+      }
+      /* Buttons */
       .btn {
         padding: 0.4rem 0.8rem;
       }
-      /* Profile Image in Profile Tab (smaller than default) */
-      #profileImage {
-        width: 60px;
-        height: 60px;
+      .mark-btn {
+        margin-top: 10px;
       }
     </style>
   </head>
   <body>
-    <div class="main-container">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <!-- Sidebar Profile (User's image and name) -->
-        <div class="sidebar-profile">
-          <img
-            id="sidebarProfileImage"
-            src="https://via.placeholder.com/40?text=No+Image"
-            alt="User"
-          />
-          <span id="sidebarProfileName">Guest User</span>
+    <div class="app-container">
+      <!-- Header -->
+      <header class="app-header">
+        <h2 id="currentTabTitle">Discover</h2>
+        <div id="profileContainer" class="profile-container">
+          <span id="profileName" class="d-none d-sm-inline">Default Name</span>
+          <div id="profileImageContainer">
+            <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" />
+          </div>
         </div>
-        <a class="nav-link active" data-tab="search">Discover</a>
-        <a class="nav-link" data-tab="watchlist">My Watchlist</a>
-        <a class="nav-link" data-tab="watched">Watched Items</a>
-        <a class="nav-link" data-tab="profile">My Profile</a>
-      </div>
+      </header>
+
       <!-- Content -->
-      <div class="content">
-        <!-- Search Tab -->
+      <main class="app-content">
+        <!-- Discover/Search Tab -->
         <div id="search" class="tab active-tab">
-          <h2>Discover Media</h2>
           <div class="search-group input-group">
             <span class="input-group-text">
               <i class="fas fa-search"></i>
@@ -193,87 +216,52 @@
         </div>
         <!-- Watchlist Tab -->
         <div id="watchlist" class="tab">
-          <h2>My Watchlist</h2>
+          <div class="d-flex justify-content-end mb-3">
+            <select id="watchlistSort" class="form-select form-select-sm" style="width: auto;">
+              <option value="latest">Latest to Oldest</option>
+              <option value="oldest">Oldest to Latest</option>
+            </select>
+          </div>
           <div id="watchlistContainer"></div>
         </div>
         <!-- Watched Tab -->
         <div id="watched" class="tab">
-          <h2>Watched Items</h2>
+          <div class="d-flex justify-content-end mb-3">
+            <select id="watchedSort" class="form-select form-select-sm" style="width: auto;">
+              <option value="latest">Latest to Oldest</option>
+              <option value="oldest">Oldest to Latest</option>
+            </select>
+          </div>
           <div id="watchedContainer"></div>
         </div>
-        <!-- Profile Tab -->
-        <div id="profile" class="tab">
-          <h2>My Profile</h2>
-          <div class="card p-3 mb-3 profile-card">
-            <img
-              id="profileImage"
-              src="https://via.placeholder.com/60?text=No+Image"
-              alt="Profile Image"
-              class="rounded-circle mx-auto d-block mb-2"
-            />
-            <h3 id="profileName" class="text-center placeholder">Guest User</h3>
-            <div class="text-center mb-3 metrics" id="profileMetrics">
-              <!-- Metrics will be updated here -->
-            </div>
-            <div class="text-end">
-              <button id="editProfileBtn" class="btn btn-secondary btn-sm">
-                Edit Profile
-              </button>
-            </div>
-            <!-- Edit Profile Form (hidden by default) -->
-            <div id="profileEditForm" style="display: none;" class="mt-3">
-              <div class="mb-2">
-                <label for="editName" class="form-label">Name</label>
-                <input type="text" id="editName" class="form-control" placeholder="Enter your name" />
-              </div>
-              <div class="mb-2">
-                <label for="editImage" class="form-label">Profile Image</label>
-                <input
-                  type="file"
-                  id="editImage"
-                  accept="image/*"
-                  class="form-control"
-                />
-              </div>
-              <div class="text-end">
-                <button id="saveProfileBtn" class="btn btn-primary btn-sm">
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </main>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav">
+        <button type="button" class="nav-btn active" data-tab="search" title="Discover">
+          <i class="fas fa-search"></i>
+        </button>
+        <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
+          <i class="fas fa-bookmark"></i>
+        </button>
+        <button type="button" class="nav-btn" data-tab="watched" title="Watched">
+          <i class="fas fa-eye"></i>
+        </button>
+      </nav>
     </div>
 
     <!-- Details Modal for Search Item -->
-    <div
-      class="modal fade"
-      id="detailsModal"
-      tabindex="-1"
-      aria-labelledby="detailsModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="detailsModalLabel"></h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="row">
               <div class="col-md-4">
-                <img
-                  id="detailsPoster"
-                  src=""
-                  alt=""
-                  class="img-fluid rounded"
-                />
+                <img id="detailsPoster" src="" alt="" class="img-fluid rounded" />
               </div>
               <div class="col-md-8">
                 <p id="detailsOverview"></p>
@@ -299,25 +287,12 @@
     </div>
 
     <!-- Rating Modal (for marking as watched) -->
-    <div
-      class="modal fade"
-      id="ratingModal"
-      tabindex="-1"
-      aria-labelledby="ratingModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="ratingModalLabel">
-              Rate (out of 5 stars)
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <h5 class="modal-title" id="ratingModalLabel">Rate (out of 5 stars)</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body text-center">
             <div id="starRating" class="star-rating">
@@ -332,82 +307,143 @@
       </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="profileModalLabel">Edit Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="editName" class="form-label">Name</label>
+              <input type="text" id="editName" class="form-control" placeholder="Enter your name">
+            </div>
+            <div class="mb-3">
+              <label for="editImage" class="form-label">Profile Image</label>
+              <input type="file" id="editImage" class="form-control" accept="image/*">
+            </div>
+            <div class="mb-3">
+              <img id="profilePreview" src="" alt="Preview" class="img-fluid rounded" style="max-width:100px; display:none;">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" id="saveProfileBtn" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <!-- Main JavaScript -->
     <script>
       // IMPORTANT: Replace with your TMDB API key.
       const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
 
-      // Data storage using localStorage (start with empty list for new users)
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
-      let user =
-        JSON.parse(localStorage.getItem("user")) ||
-        { name: "Guest User", profileImage: "" };
+      let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
 
-      // Save data to localStorage
+      // User Profile Data stored as name and image (base64 if uploaded)
+      let userProfile = JSON.parse(localStorage.getItem("userProfile")) || {
+        name: "Default Name",
+        image: "https://via.placeholder.com/40"
+      };
+
       function saveData() {
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
-        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("activityLog", JSON.stringify(activityLog));
+        localStorage.setItem("userProfile", JSON.stringify(userProfile));
       }
 
-      // Navigation: switch tabs
-      document.querySelectorAll(".nav-link").forEach((link) => {
-        link.addEventListener("click", function () {
-          document
-            .querySelectorAll(".nav-link")
-            .forEach((l) => l.classList.remove("active"));
+      // Update Profile Header
+      function updateProfileHeader() {
+        document.getElementById("profileName").innerText = userProfile.name;
+        document.getElementById("profileImage").src = userProfile.image;
+      }
+
+      // Bottom Navigation: switch tabs and update header title
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
           this.classList.add("active");
           const tab = this.getAttribute("data-tab");
-          document
-            .querySelectorAll(".tab")
-            .forEach((t) => t.classList.remove("active-tab"));
+          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
           document.getElementById(tab).classList.add("active-tab");
-          if (tab === "profile") updateProfileUI();
+          // Update header title based on button's title attribute
+          document.getElementById("currentTabTitle").innerText = this.title;
         });
       });
 
-      // Debounce helper for search
-      function debounce(func, delay) {
-        let timer;
-        return function (...args) {
-          clearTimeout(timer);
-          timer = setTimeout(() => func.apply(this, args), delay);
-        };
-      }
+      // Header Profile Click: Open Profile Edit Modal
+      const profileModal = new bootstrap.Modal(document.getElementById("profileModal"));
+      document.getElementById("profileContainer").addEventListener("click", function () {
+        document.getElementById("editName").value = userProfile.name;
+        document.getElementById("editImage").value = "";
+        document.getElementById("profilePreview").style.display = "none";
+        profileModal.show();
+      });
+
+      // Handle image preview on file select
+      document.getElementById("editImage").addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (evt) {
+            document.getElementById("profilePreview").src = evt.target.result;
+            document.getElementById("profilePreview").style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Save profile changes
+      document.getElementById("saveProfileBtn").addEventListener("click", function () {
+        const newName = document.getElementById("editName").value || "Default Name";
+        userProfile.name = newName;
+        const fileInput = document.getElementById("editImage");
+        if (fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (evt) {
+            userProfile.image = evt.target.result;
+            saveData();
+            updateProfileHeader();
+            profileModal.hide();
+          };
+          reader.readAsDataURL(fileInput.files[0]);
+        } else {
+          saveData();
+          updateProfileHeader();
+          profileModal.hide();
+        }
+      });
 
       // TMDB search (movies & TV)
       async function performSearch(query) {
-        const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
-          query
-        )}`;
+        const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
         try {
           const response = await fetch(url);
           const data = await response.json();
           if (data.results) renderSearchResults(data.results);
           else document.getElementById("searchResults").innerHTML =
-            "<p>No results found.</p>";
+            "<p>No results found. Try another search!</p>";
         } catch (error) {
           console.error("Error:", error);
         }
       }
 
-      // Render search results (only movies/TV)
+      // Render Search Results
       function renderSearchResults(results) {
         const container = document.getElementById("searchResults");
         container.innerHTML = "";
-        results.forEach((item) => {
+        results.forEach(item => {
           if (item.media_type !== "movie" && item.media_type !== "tv") return;
           const title = item.media_type === "movie" ? item.title : item.name;
-          const date =
-            item.media_type === "movie"
-              ? item.release_date
-              : item.first_air_date;
+          const date = item.media_type === "movie" ? item.release_date : item.first_air_date;
           const year = date ? date.substring(0, 4) : "N/A";
-          const posterUrl = item.poster_path
-            ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-            : "https://via.placeholder.com/80x120";
+          const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : "https://via.placeholder.com/80x120";
           const card = document.createElement("div");
           card.className = "card mb-3 media-card";
           card.innerHTML = `
@@ -423,7 +459,6 @@
               </div>
             </div>
           `;
-          // Clicking the card shows detailed info in a modal
           card.addEventListener("click", function () {
             fetchDetails(item.id, item.media_type);
           });
@@ -431,7 +466,6 @@
         });
       }
 
-      // Fetch details info (movie or TV)
       async function fetchDetails(id, mediaType) {
         let url = "";
         if (mediaType === "movie") {
@@ -448,29 +482,21 @@
         }
       }
 
-      // Show details modal and populate fields
       function showDetailsModal(details, mediaType) {
         const title = mediaType === "movie" ? details.title : details.name;
         document.getElementById("detailsModalLabel").innerText = title;
-        const posterUrl = details.poster_path
-          ? `https://image.tmdb.org/t/p/w300${details.poster_path}`
-          : "https://via.placeholder.com/300x450";
+        const posterUrl = details.poster_path ? `https://image.tmdb.org/t/p/w300${details.poster_path}` : "https://via.placeholder.com/300x450";
         document.getElementById("detailsPoster").src = posterUrl;
         document.getElementById("detailsPoster").alt = title;
-        document.getElementById("detailsOverview").innerText =
-          details.overview || "No description available.";
-        document.getElementById("detailsDate").innerText =
-          details.release_date || details.first_air_date || "N/A";
-        document.getElementById("detailsRating").innerText =
-          details.vote_average ? details.vote_average + " / 10" : "N/A";
+        document.getElementById("detailsOverview").innerText = details.overview || "No description available.";
+        document.getElementById("detailsDate").innerText = details.release_date || details.first_air_date || "N/A";
+        document.getElementById("detailsRating").innerText = details.vote_average ? details.vote_average + " / 10" : "N/A";
         if (details.genres && details.genres.length > 0) {
-          const genreNames = details.genres.map((g) => g.name).join(", ");
-          document.getElementById("detailsGenres").innerHTML =
-            "<strong>Genres:</strong> " + genreNames;
+          const genreNames = details.genres.map(g => g.name).join(", ");
+          document.getElementById("detailsGenres").innerHTML = "<strong>Genres:</strong> " + genreNames;
         } else {
           document.getElementById("detailsGenres").innerHTML = "";
         }
-        // Set current detail for watchlist addition. Include overview for later use.
         currentDetail = {
           id: details.id,
           media_type: mediaType,
@@ -484,49 +510,42 @@
         detailsModal.show();
       }
 
-      // Global variable to store current detail from modal
       let currentDetail = null;
-      // Initialize details modal (Bootstrap)
-      const detailsModal = new bootstrap.Modal(
-        document.getElementById("detailsModal")
-      );
+      const detailsModal = new bootstrap.Modal(document.getElementById("detailsModal"));
 
-      // Add to Watchlist button in details modal (no confirmation messages)
-      document
-        .getElementById("addToWatchlistBtn")
-        .addEventListener("click", function () {
-          if (!currentDetail) return;
-          if (
-            !mediaList.find(
-              (m) =>
-                m.id === currentDetail.id &&
-                m.media_type === currentDetail.media_type
-            )
-          ) {
-            mediaList.push(currentDetail);
-            saveData();
-            renderWatchlist();
-          }
-          detailsModal.hide();
-          // Reset search input and results
-          document.getElementById("searchQuery").value = "";
-          document.getElementById("searchResults").innerHTML = "";
-        });
+      document.getElementById("addToWatchlistBtn").addEventListener("click", function () {
+        if (!currentDetail) return;
+        if (!mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)) {
+          mediaList.push(currentDetail);
+          saveData();
+          renderWatchlist();
+        }
+        detailsModal.hide();
+        document.getElementById("searchQuery").value = "";
+        document.getElementById("searchResults").innerHTML = "";
+      });
 
-      // Render Watchlist (only not watched items)
+      // Render Watchlist
       function renderWatchlist() {
         const container = document.getElementById("watchlistContainer");
         container.innerHTML = "";
-        const list = mediaList.filter((m) => !m.watched);
+        let list = mediaList.filter(m => !m.watched);
+        const sortOrder = document.getElementById("watchlistSort")?.value || "latest";
+        list.sort((a, b) => {
+          let dateA = new Date(a.date).getTime() || 0;
+          let dateB = new Date(b.date).getTime() || 0;
+          return sortOrder === "latest" ? dateB - dateA : dateA - dateB;
+        });
         if (list.length === 0) {
-          container.innerHTML = "<p>Your watchlist is empty.</p>";
+          container.innerHTML = "<p>Your watchlist is feeling lonely... Add some awesome media!</p>";
           return;
         }
         list.forEach((m, idx) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
           const card = document.createElement("div");
-          card.className = "card mb-3";
+          card.className = "card mb-3 media-card";
           card.innerHTML = `
+            <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
                 <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
@@ -535,24 +554,28 @@
                 <div class="card-body">
                   <h5 class="card-title">${m.title}</h5>
                   <p class="card-text"><small>${year}</small></p>
-                  <p class="card-text"><small>${
-                    m.overview ? m.overview : "No synopsis available."
-                  }</small></p>
-                  <button class="btn btn-sm btn-success mark-btn float-end" data-index="${idx}">
-                    Mark as Watched
+                  <p class="card-text"><small>${m.overview || "No synopsis available."}</small></p>
+                  <button class="btn btn-sm btn-outline-secondary mark-btn" data-index="${idx}" style="margin-top:10px;">
+                    I Watched It
                   </button>
                 </div>
               </div>
             </div>
           `;
-          container.appendChild(card);
-        });
-        // Add event listeners for marking as watched
-        document.querySelectorAll(".mark-btn").forEach((btn) => {
-          btn.addEventListener("click", function () {
+          card.querySelector(".delete-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            const notWatched = mediaList.filter(m => !m.watched);
+            const itemToDelete = notWatched[idx];
+            mediaList = mediaList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
+            saveData();
+            renderWatchlist();
+          });
+          card.querySelector(".mark-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
             const idx = this.getAttribute("data-index");
             openRatingModal(idx);
           });
+          container.appendChild(card);
         });
       }
 
@@ -560,16 +583,23 @@
       function renderWatched() {
         const container = document.getElementById("watchedContainer");
         container.innerHTML = "";
-        const list = mediaList.filter((m) => m.watched);
+        let list = mediaList.filter(m => m.watched);
+        const sortOrder = document.getElementById("watchedSort")?.value || "latest";
+        list.sort((a, b) => {
+          let dateA = new Date(a.date).getTime() || 0;
+          let dateB = new Date(b.date).getTime() || 0;
+          return sortOrder === "latest" ? dateB - dateA : dateA - dateB;
+        });
         if (list.length === 0) {
-          container.innerHTML = "<p>No items marked as watched.</p>";
+          container.innerHTML = "<p>You haven't watched anything yet! How about a movie marathon?</p>";
           return;
         }
-        list.forEach((m) => {
+        list.forEach((m, idx) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
           const card = document.createElement("div");
-          card.className = "card mb-3";
+          card.className = "card mb-3 media-card";
           card.innerHTML = `
+            <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
                 <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
@@ -578,131 +608,74 @@
                 <div class="card-body">
                   <h5 class="card-title">${m.title}</h5>
                   <p class="card-text"><small>${year}</small></p>
-                  <p class="card-text"><small>${
-                    m.overview ? m.overview : "No synopsis available."
-                  }</small></p>
+                  <p class="card-text"><small>${m.overview || "No synopsis available."}</small></p>
                   <p class="card-text"><small>Rating: ${m.rating} / 5</small></p>
                 </div>
               </div>
             </div>
           `;
+          card.querySelector(".delete-btn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            const watchedItems = mediaList.filter(m => m.watched);
+            const itemToDelete = watchedItems[idx];
+            mediaList = mediaList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
+            saveData();
+            renderWatched();
+          });
           container.appendChild(card);
         });
       }
 
-      // Rating Modal functionality (for marking as watched)
+      // Rating Modal functionality
       let currentMarkIndex = null;
-      const ratingModal = new bootstrap.Modal(
-        document.getElementById("ratingModal")
-      );
+      const ratingModal = new bootstrap.Modal(document.getElementById("ratingModal"));
       function openRatingModal(index) {
         currentMarkIndex = index;
-        document
-          .querySelectorAll("#starRating i")
-          .forEach((star) => star.classList.remove("selected"));
+        document.querySelectorAll("#starRating i").forEach(star => star.classList.remove("selected"));
         ratingModal.show();
       }
-      document.querySelectorAll("#starRating i").forEach((star) => {
+      document.querySelectorAll("#starRating i").forEach(star => {
         star.addEventListener("click", function () {
           const rating = parseInt(this.getAttribute("data-value"));
-          document.querySelectorAll("#starRating i").forEach((s) => {
+          document.querySelectorAll("#starRating i").forEach(s => {
             const val = parseInt(s.getAttribute("data-value"));
             if (val <= rating) s.classList.add("selected");
             else s.classList.remove("selected");
           });
-          const notWatched = mediaList.filter((m) => !m.watched);
+          const notWatched = mediaList.filter(m => !m.watched);
           const item = notWatched[currentMarkIndex];
-          const originalIndex = mediaList.findIndex(
-            (m) => m.id === item.id && m.media_type === item.media_type
-          );
+          const originalIndex = mediaList.findIndex(m => m.id === item.id && m.media_type === item.media_type);
           mediaList[originalIndex].watched = true;
           mediaList[originalIndex].rating = rating;
           saveData();
           ratingModal.hide();
           renderWatchlist();
           renderWatched();
-          updateProfileUI();
         });
       });
 
-      // Profile Section update
-      function updateProfileUI() {
-        document.getElementById("profileName").innerText = user.name;
-        if (!user.name || user.name === "Guest User") {
-          document.getElementById("profileName").classList.add("placeholder");
-        } else {
-          document.getElementById("profileName").classList.remove("placeholder");
-        }
-        if (user.profileImage) {
-          document.getElementById("profileImage").src = user.profileImage;
-          document.getElementById("sidebarProfileImage").src = user.profileImage;
-        } else {
-          document.getElementById("profileImage").src =
-            "https://via.placeholder.com/60?text=No+Image";
-          document.getElementById("sidebarProfileImage").src =
-            "https://via.placeholder.com/40?text=No+Image";
-        }
-        document.getElementById("sidebarProfileName").innerText = user.name;
-        // Updated Metrics: movies watched, series watched, remaining items, and average rating.
-        const moviesWatched = mediaList.filter(
-          (m) => m.watched && m.media_type === "movie"
-        ).length;
-        const seriesWatched = mediaList.filter(
-          (m) => m.watched && m.media_type === "tv"
-        ).length;
-        const remaining = mediaList.filter((m) => !m.watched).length;
-        let avg = 0;
-        const watchedItems = mediaList.filter(
-          (m) => m.watched && m.rating !== null
-        );
-        if (watchedItems.length > 0) {
-          avg = watchedItems.reduce((sum, m) => sum + m.rating, 0) / watchedItems.length;
-          avg = avg.toFixed(1);
-        }
-        document.getElementById("profileMetrics").innerHTML = `
-          <div class="metric-item">Movies Watched: ${moviesWatched}</div>
-          <div class="metric-item">Series Watched: ${seriesWatched}</div>
-          <div class="metric-item">Remaining: ${remaining}</div>
-          <div class="metric-item">Average Rating: ${avg} / 5</div>
-        `;
+      // Live search with debounce
+      function debounce(func, delay) {
+        let timer;
+        return function (...args) {
+          clearTimeout(timer);
+          timer = setTimeout(() => func.apply(this, args), delay);
+        };
       }
-
-      // Profile Edit functionality
-      document.getElementById("editProfileBtn").addEventListener("click", function () {
-        const form = document.getElementById("profileEditForm");
-        form.style.display = form.style.display === "none" ? "block" : "none";
-        document.getElementById("editName").value = user.name;
-      });
-      document.getElementById("saveProfileBtn").addEventListener("click", function () {
-        user.name = document.getElementById("editName").value.trim() || "Guest User";
-        saveData();
-        updateProfileUI();
-        document.getElementById("profileEditForm").style.display = "none";
-      });
-      document.getElementById("editImage").addEventListener("change", function (e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (event) {
-            user.profileImage = event.target.result;
-            saveData();
-            updateProfileUI();
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // Live search event with debounce
       document.getElementById("searchQuery").addEventListener("keyup", debounce(function () {
         const query = this.value.trim();
         if (query) performSearch(query);
         else document.getElementById("searchResults").innerHTML = "";
       }, 500));
 
+      // Sort filter listeners
+      document.getElementById("watchlistSort").addEventListener("change", renderWatchlist);
+      document.getElementById("watchedSort").addEventListener("change", renderWatched);
+
       // Initial render
-      updateProfileUI();
       renderWatchlist();
       renderWatched();
+      updateProfileHeader();
     </script>
   </body>
 </html>
