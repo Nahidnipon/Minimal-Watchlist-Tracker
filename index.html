@@ -15,40 +15,35 @@
   <style>
     :root {
       --primary-color: #1abc9c;
+      --primary-hover: #17a589;
       --secondary-color: #333;
       --bg-color: #f0f2f5;
       --card-bg: #fff;
       --text-color: #333;
     }
-
-    /* Hide all modal backdrops (if you use modals anywhere) */
-    .modal-backdrop {
-      display: none !important;
-    }
-
+    /* Base reset and font */
     body {
       margin: 0;
       padding: 0;
       background-color: var(--bg-color);
       color: var(--text-color);
       font-family: 'Poppins', sans-serif;
-      padding-bottom: 80px; /* For fixed bottom navigation */
+      font-size: 16px;
+      min-height: 100vh;
     }
-
-    /* ------------------ MAIN APP CONTAINER ------------------ */
+    /* Main container adjusted for wider screens */
     .app-container {
-      max-width: 500px;
+      width: 100%;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 16px; /* Added padding all around */
-      position: relative;
+      padding: 16px;
       min-height: 100vh;
       background: var(--card-bg);
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       border-radius: 8px;
-      margin-top: 20px;
+      position: relative;
     }
-
-    /* HEADER COMPONENT */
+    /* HEADER */
     .app-header {
       display: flex;
       justify-content: space-between;
@@ -82,10 +77,10 @@
       height: 100%;
       object-fit: cover;
     }
-
-    /* CONTENT WRAPPER */
+    /* CONTENT TABS */
     .app-content {
-      padding: 10px 0;
+      /* extra bottom padding so content isn't hidden behind fixed nav */
+      padding: 10px 0 80px;
     }
     .tab {
       display: none;
@@ -93,7 +88,6 @@
     .tab.active-tab {
       display: block;
     }
-
     /* SEARCH COMPONENT */
     .search-group {
       margin-bottom: 1rem;
@@ -133,7 +127,6 @@
       color: #666;
       margin-top: 0.25rem;
     }
-
     /* WATCHLIST / WATCHED CARDS */
     .media-card {
       border: 1px solid #e1e4e8;
@@ -171,8 +164,7 @@
     .media-card .delete-btn:hover {
       opacity: 1;
     }
-
-    /* PROFILE COMPONENT */
+    /* PROFILE */
     .profile-card {
       position: relative;
       border: 1px solid #e1e4e8;
@@ -216,8 +208,7 @@
       color: #555;
       margin-top: 10px;
     }
-
-    /* CONTENT PAGE COMPONENT (Detailed Media View) */
+    /* ------------------ DETAILS PAGE COMPONENT ------------------ */
     #detailsApp {
       position: fixed;
       top: 0;
@@ -231,62 +222,140 @@
       display: none;
     }
     .details-container {
-      max-width: 500px;
+      width: 100%;
+      max-width: 1200px;
       margin: 0 auto;
       background: var(--card-bg);
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding-bottom: 60px;
+      padding: 20px;
       position: relative;
     }
+    /* Header Section: Poster & Basic Info */
     .details-header {
-      text-align: center;
-      position: relative;
-      padding: 20px 0;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .details-poster-container {
+      flex-shrink: 0;
     }
     .details-poster {
-      width: 180px;
-      border-radius: 8px;
+      width: 120px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 4px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      margin-bottom: 10px;
     }
-    .details-title {
-      font-size: 1.8em;
-      margin: 10px 0;
-      color: var(--secondary-color);
+    .details-header-info {
+      flex: 1;
+    }
+    .details-header-info h1 {
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    .detail-year,
+    .detail-director {
+      font-size: 1rem;
+      margin: 5px 0;
+      color: #555;
+    }
+    /* Watchlist/Rating Section */
+    #detailsActions {
       text-align: center;
+      margin-bottom: 20px;
     }
-    .details-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      font-size: 0.95em;
-      padding: 12px 0;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-      justify-content: center;
-    }
-    .details-meta div {
-      background: #f8f9fa;
-      padding: 8px;
+    .btn-add-watchlist {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 12px;
       border-radius: 8px;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      width: 80%;
+      max-width: 300px;
+      margin: 20px auto;
+      transition: background-color 0.3s;
+    }
+    .btn-add-watchlist:hover {
+      background-color: var(--primary-hover);
+    }
+    .details-rating-section {
+      padding: 10px 20px;
       text-align: center;
+      width: 80%;
+      max-width: 300px;
+      margin: 20px auto;
+    }
+    .details-rating-section h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+    .details-rating-section i.fas.fa-star {
+      font-size: 1.6rem;
+      margin: 0 5px;
+      color: #ccc;
+      cursor: pointer;
+    }
+    .details-rating-section i.fas.fa-star.selected {
+      color: gold;
+    }
+    .details-rating-section button {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    .details-rating-section button:hover {
+      background-color: var(--primary-hover);
+    }
+    #detailsUserRating h3 {
+      font-size: 1.2rem;
       font-weight: 500;
     }
-    .details-description {
-      padding: 10px 20px;
-      font-size: 0.95em;
-      color: #555;
-      margin-bottom: 10px;
+    /* Additional Info Section */
+    .additional-info-section {
+      margin-bottom: 20px;
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 8px;
     }
-    .details-description h3 {
-      margin-bottom: 0.5rem;
+    .additional-info-section p {
+      margin: 5px 0;
+      font-size: 0.95rem;
     }
+    /* TV Series Info: Season & Episode Dropdowns */
+    .tv-series-info-section {
+      margin-bottom: 20px;
+    }
+    .tv-series-info-section label {
+      margin-bottom: 5px;
+      display: block;
+    }
+    /* Description Section */
+    .details-description-section {
+      margin-bottom: 20px;
+    }
+    .detail-overview {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #444;
+    }
+    /* Cast Section */
     .details-cast {
       margin: 0 20px 15px 20px;
     }
     .details-cast h3 {
       margin-bottom: 0.5rem;
+      font-size: 1.2rem;
     }
     .details-cast-list {
       display: flex;
@@ -297,6 +366,8 @@
     .cast-item {
       text-align: center;
       flex: 0 0 auto;
+      font-size: 0.9rem;
+      width: 70px;
     }
     .cast-item img {
       width: 60px;
@@ -304,53 +375,28 @@
       border-radius: 50%;
       object-fit: cover;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      margin-bottom: 5px;
     }
-
-    /* Add to Watchlist Button */
-    .btn-add-watchlist {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 10px 16px;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin: 10px 0;
-    }
-    .btn-add-watchlist:hover {
-      background-color: #17a589;
-    }
-
-    /* Inline Rating Section */
-    .details-rating-section {
-      padding: 10px 20px;
-      margin-top: 10px;
+    /* ------------------ EMPTY STATE STYLES ------------------ */
+    .empty-state {
       text-align: center;
+      padding: 40px 20px;
+      font-size: 1.1rem;
+      color: #777;
     }
-    .details-rating-section h3 {
-      margin-bottom: 0.5rem;
+    .empty-state img {
+      max-width: 400px;
+      margin-bottom: 20px;
     }
-    .details-rating-section i.fas.fa-star {
-      font-size: 1.4rem;
-      margin: 0 5px;
-      color: #ccc;
-    }
-    .details-rating-section i.fas.fa-star.selected {
-      color: gold;
-    }
-    .details-rating-section button {
-      margin-top: 10px;
-    }
-
-    /* NAVIGATION COMPONENT */
+    /* ------------------ NAVIGATION COMPONENT ------------------ */
     .bottom-nav {
       position: fixed;
       bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
+      right: 0;
+      margin: 0 auto;
       width: 100%;
-      max-width: 500px;
+      max-width: 1200px;
       height: 60px;
       background-color: var(--card-bg);
       border-top: 1px solid #e1e4e8;
@@ -371,13 +417,11 @@
     .nav-btn.active {
       color: var(--primary-color);
     }
-
     /* LOADING SPINNER */
     .spinner {
       text-align: center;
       padding: 20px;
     }
-
     /* MESSAGE CONTAINER (unused) */
     #messageContainer {
       position: fixed;
@@ -389,7 +433,7 @@
   </style>
 </head>
 <body>
-  <!-- Message container (currently not used) -->
+  <!-- Message Container -->
   <div id="messageContainer"></div>
 
   <!-- MAIN APP VIEW -->
@@ -409,7 +453,7 @@
     <main class="app-content">
       <!-- WATCHLIST TAB -->
       <div id="watchlist" class="tab">
-        <div class="d-flex justify-content-end mb-3">
+        <div id="watchlistFilters" class="d-flex justify-content-end mb-3">
           <select id="watchlistSort" class="form-select form-select-sm" style="width: auto;">
             <option value="release_new">Release Date: Newest First</option>
             <option value="release_old">Release Date: Oldest First</option>
@@ -418,7 +462,6 @@
         </div>
         <div id="watchlistContainer"></div>
       </div>
-
       <!-- SEARCH TAB -->
       <div id="search" class="tab active-tab">
         <div class="search-group input-group">
@@ -427,10 +470,9 @@
         </div>
         <div id="searchResults"></div>
       </div>
-
       <!-- WATCHED TAB -->
       <div id="watched" class="tab">
-        <div class="d-flex justify-content-end mb-3">
+        <div id="watchedFilters" class="d-flex justify-content-end mb-3">
           <select id="watchedSort" class="form-select form-select-sm" style="width: auto;">
             <option value="release_new">Release Date: Newest First</option>
             <option value="release_old">Release Date: Oldest First</option>
@@ -439,7 +481,6 @@
         </div>
         <div id="watchedContainer"></div>
       </div>
-
       <!-- PROFILE TAB -->
       <div id="profile" class="tab">
         <div class="profile-card">
@@ -487,52 +528,27 @@
     </div>
   </div>
 
-  <!-- CONTENT PAGE COMPONENT (Detailed Media View) -->
+  <!-- DETAILS PAGE COMPONENT (Banner Removed) -->
   <div id="detailsApp">
     <div class="details-container">
+      <!-- Header: Poster & Basic Info -->
       <div class="details-header">
-        <!-- Poster -->
-        <img id="detailPoster" class="details-poster" src="" alt="Poster" loading="lazy">
+        <div class="details-poster-container">
+          <img id="detailPoster" class="details-poster" src="" alt="Poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450.png?text=No+Image';">
+        </div>
+        <div class="details-header-info">
+          <h1 id="detailTitle" class="details-title"></h1>
+          <p id="detailReleaseYear" class="detail-year"></p>
+          <p id="detailDirector" class="detail-director"></p>
+        </div>
       </div>
-      <!-- Title -->
-      <h1 id="detailTitle" class="details-title"></h1>
-
-      <!-- Basic info row (Release date, Genre, etc.) -->
-      <div class="details-meta" id="detailMeta">
-        <div id="detailDate"><strong>Release:</strong></div>
-        <div id="detailGenres"><strong>Genres:</strong></div>
-        <div id="detailDuration"><strong>Duration:</strong></div>
-        <div id="detailDirector"><strong>Director:</strong></div>
-        <div id="detailLanguage"><strong>Language:</strong></div>
-        <div id="detailRating"><strong>Rating:</strong></div>
-        <!-- If you want to show Seasons/Episodes for TV, un-comment these or handle them in JS -->
-        <div id="detailSeasons" style="display:none;"><strong>Seasons:</strong> 0</div>
-        <div id="detailEpisodes" style="display:none;"><strong>Episodes:</strong> 0</div>
-      </div>
-
-      <!-- Description -->
-      <div class="details-description">
-        <h3>Description</h3>
-        <p id="detailOverview"></p>
-      </div>
-
-      <!-- Cast -->
-      <div class="details-cast">
-        <h3>Cast</h3>
-        <div id="castList" class="details-cast-list"></div>
-      </div>
-
-      <!-- ACTIONS: Add to Watchlist OR Rate (inline) -->
+      <!-- Add to Watchlist / Rating Section -->
       <div id="detailsActions" class="text-center">
-        <!-- Add to watchlist button -->
         <button class="btn-add-watchlist" id="addToWatchlistBtn">
           <i class="fas fa-plus"></i> Add to Watchlist
         </button>
-
-        <!-- Rating section (hidden by default) -->
         <div class="details-rating-section" id="detailsRatingSection" style="display: none;">
           <h3>Share your experience!</h3>
-          <!-- Star icons -->
           <div id="starRatingDetails" class="d-flex justify-content-center">
             <i class="fas fa-star" data-value="1" style="cursor:pointer;"></i>
             <i class="fas fa-star" data-value="2" style="cursor:pointer;"></i>
@@ -540,9 +556,35 @@
             <i class="fas fa-star" data-value="4" style="cursor:pointer;"></i>
             <i class="fas fa-star" data-value="5" style="cursor:pointer;"></i>
           </div>
-          <!-- Submit button -->
-          <button id="submitRatingBtn" class="btn btn-primary">Submit</button>
+          <button id="submitRatingBtn">Submit</button>
         </div>
+        <div id="detailsUserRating" class="text-center" style="display:none;">
+          <h3>Your rating: <span id="userRatingValue"></span> / 5</h3>
+        </div>
+      </div>
+      <!-- Additional Info Section -->
+      <div class="additional-info-section" id="additionalInfo">
+        <!-- Additional info will be inserted here -->
+      </div>
+      <!-- TV Series Info Section (for TV shows only) -->
+      <div class="tv-series-info-section" id="tvSeriesInfoSection" style="display:none;">
+         <div class="mb-3">
+             <label for="seasonDropdown"><strong>Select Season:</strong></label>
+             <select id="seasonDropdown" class="form-select"></select>
+         </div>
+         <div class="mb-3">
+             <label for="episodeDropdown"><strong>Select Episode:</strong></label>
+             <select id="episodeDropdown" class="form-select" disabled></select>
+         </div>
+      </div>
+      <!-- Description Section -->
+      <div class="details-description-section">
+        <p id="detailOverview" class="detail-overview"></p>
+      </div>
+      <!-- Cast Section -->
+      <div class="details-cast">
+        <h3>Cast</h3>
+        <div id="castList" class="details-cast-list"></div>
       </div>
     </div>
   </div>
@@ -566,11 +608,9 @@
   <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const TMDB_API_KEY = "YOUR_TMDB_API_KEY_HERE"; // <--- REPLACE WITH YOUR KEY
+    const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
     let currentDetail = null;
-
-    // These will track the user's current star rating selection in the inline rating UI
-    let selectedRating = 0;
+    let selectedRating = 0; // For interactive rating
 
     const urlParams = new URLSearchParams(window.location.search);
     const mediaTypeParam = urlParams.get("media_type");
@@ -578,8 +618,6 @@
 
     // Initialize main app
     initMainApp();
-
-    // If user navigates directly with ?media_type=X&id=Y, show details overlay
     if (mediaTypeParam && idParam) {
       document.getElementById("detailsApp").style.display = "block";
       loadDetails(mediaTypeParam, idParam);
@@ -587,38 +625,31 @@
       document.getElementById("detailsApp").style.display = "none";
     }
 
-    // ------------------ GLOBAL NAV TABS ------------------
+    // Global Navigation Tabs
     document.querySelectorAll(".nav-btn").forEach(btn => {
       btn.addEventListener("click", function () {
-        // If the details overlay is open, close it
         if (document.getElementById("detailsApp").style.display === "block") {
           document.getElementById("detailsApp").style.display = "none";
           history.pushState("", document.title, window.location.pathname);
         }
         document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
         this.classList.add("active");
-
         const tab = this.getAttribute("data-tab");
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
         document.getElementById(tab).classList.add("active-tab");
-
         document.getElementById("currentTabTitle").innerText = this.title;
-
         if (tab === "profile") renderProfile();
         if (tab === "watchlist") renderWatchlist();
         if (tab === "watched") renderWatched();
       });
     });
 
-    // ------------------ MAIN APP INIT FUNCTION ------------------
     function initMainApp() {
-      // Data saving helper
       function saveData(mediaList, activityLog, userProfile) {
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
         localStorage.setItem("activityLog", JSON.stringify(activityLog));
         localStorage.setItem("userProfile", JSON.stringify(userProfile));
       }
-
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
       let userProfile = JSON.parse(localStorage.getItem("userProfile")) || {
@@ -626,34 +657,26 @@
         image: "https://via.placeholder.com/40"
       };
 
-      // Render profile info
       window.renderProfile = function() {
         mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const watchedItems = mediaList.filter(m => m.watched);
         const watchlistItems = mediaList.filter(m => !m.watched);
         const watchedCount = watchedItems.length;
         const watchlistCount = watchlistItems.length;
-
-        // Summation of hours
         const totalWatchHours = watchedItems.reduce((total, item) => total + (parseFloat(item.duration) || 0), 0).toFixed(1);
-
-        // Average rating
         const totalRating = watchedItems.reduce((sum, item) => sum + (item.rating || 0), 0);
         const avgRating = watchedCount ? (totalRating / watchedCount).toFixed(1) : "0";
-
         document.getElementById("profileCardImage").src = userProfile.image;
         document.getElementById("profileCardName").innerText = userProfile.name;
         document.getElementById("profileStats").innerText =
           `Watched: ${watchedCount} | Watchlisted: ${watchlistCount} | Watch Hours: ${totalWatchHours}h | Satisfaction: ${avgRating}`;
       };
 
-      // Update top-right profile name & image
       function updateProfileHeader() {
         document.getElementById("profileName").innerText = userProfile.name;
         document.getElementById("profileImage").src = userProfile.image;
       }
 
-      // Profile modal logic
       var profileModalEl = document.getElementById('profileModal');
       profileModalEl.addEventListener('show.bs.modal', function () {
         document.getElementById("editName").value = userProfile.name;
@@ -695,11 +718,9 @@
         }
       });
 
-      // SEARCH logic
       async function performSearch(query) {
         const resultsContainer = document.getElementById("searchResults");
         resultsContainer.innerHTML = '<div class="spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-
         const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
         try {
           const response = await fetch(url);
@@ -708,11 +729,21 @@
           if (data.results && Array.isArray(data.results)) {
             renderSearchResults(data.results);
           } else {
-            resultsContainer.innerHTML = "<p>No results found. Try another search!</p>";
+            resultsContainer.innerHTML = `
+              <div class='empty-state'>
+                <img src='https://via.placeholder.com/400x300.png?text=No+Results' alt='No Results'><br>
+                No results found. Try another search!
+              </div>
+            `;
           }
         } catch (error) {
           console.error("Search error:", error);
-          resultsContainer.innerHTML = "<p>Error fetching search results.</p>";
+          resultsContainer.innerHTML = `
+            <div class='empty-state'>
+              <img src='https://via.placeholder.com/400x300.png?text=Error' alt='Error'><br>
+              Error fetching search results.
+            </div>
+          `;
         }
       }
 
@@ -726,12 +757,12 @@
           const year = date ? date.substring(0, 4) : "N/A";
           const posterUrl = item.poster_path
             ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-            : "https://via.placeholder.com/200x300";
-
+            : "https://via.placeholder.com/200x300.png?text=No+Image";
           const card = document.createElement("div");
           card.className = "search-card";
           card.innerHTML = `
-            <img src="${posterUrl}" alt="${title}" loading="lazy">
+            <img src="${posterUrl}" alt="${title}" loading="lazy"
+                 onerror="this.src='https://via.placeholder.com/200x300.png?text=No+Image';">
             <div class="card-body">
               <h5 class="card-title">${title}</h5>
               <p class="card-text"><small>${year}</small></p>
@@ -750,15 +781,25 @@
         loadDetails(mediaType, id);
       }
 
-      // WATCHLIST / WATCHED logic
       function renderWatchlist() {
         mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const container = document.getElementById("watchlistContainer");
-        container.innerHTML = "";
-
+        const filters = document.getElementById("watchlistFilters");
         let list = mediaList.filter(m => !m.watched);
+        if (list.length === 0) {
+          filters.style.display = "none";
+          container.innerHTML = `
+            <div class='empty-state'>
+              <img src='https://img.freepik.com/free-vector/open-air-cinema_23-2148644732.jpg?t=st=1742117585~exp=1742121185~hmac=c513ea492b7e3ae44d3cb7b4f7f9682109891a8f07f77d005d94a54b82636bc7&w=996'
+                   alt='Empty'>
+              <br>Your watchlist is empty. Add some media!
+            </div>
+          `;
+          return;
+        } else {
+          filters.style.display = "flex";
+        }
         const sortOrder = document.getElementById("watchlistSort").value || "release_new";
-
         list.sort((a, b) => {
           if (sortOrder === "release_new") {
             return (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0);
@@ -768,25 +809,21 @@
             return (b.added || 0) - (a.added || 0);
           }
         });
-
-        if (list.length === 0) {
-          container.innerHTML = "<p>Your watchlist is feeling lonely... Add some awesome media!</p>";
-          return;
-        }
-
+        container.innerHTML = "";
         list.forEach((m) => {
+          const extraInfo = (m.media_type === "movie")
+            ? `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`
+            : "";
           const year = m.date ? m.date.substring(0, 4) : "N/A";
-          const extraInfo = (m.media_type === "tv")
-            ? `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`
-            : `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
-
           const card = document.createElement("div");
           card.className = "card mb-3 media-card";
           card.innerHTML = `
             <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
-                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid"
+                     style="width:80px; height:120px; object-fit:cover;"
+                     onerror="this.src='https://via.placeholder.com/80x120.png?text=No+Image';">
               </div>
               <div class="col">
                 <div class="card-body">
@@ -798,7 +835,9 @@
               </div>
             </div>
           `;
-          // Deletion
+          card.addEventListener("click", function(){
+            openDetailsPage(m.id, m.media_type);
+          });
           card.querySelector(".delete-btn").addEventListener("click", function (e) {
             e.stopPropagation();
             let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
@@ -814,11 +853,22 @@
       function renderWatched() {
         mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const container = document.getElementById("watchedContainer");
-        container.innerHTML = "";
-
+        const filters = document.getElementById("watchedFilters");
         let list = mediaList.filter(m => m.watched);
+        if (list.length === 0) {
+          filters.style.display = "none";
+          container.innerHTML = `
+            <div class='empty-state'>
+              <img src='https://img.freepik.com/free-vector/hand-drawn-movie-theater-drawing-illustration_23-2151023043.jpg?t=st=1742117582~exp=1742121182~hmac=1f25fce97fa62c661472e2b8a0c29d0a51644115d62b51510a679dbce4d6b121&w=740'
+                   alt='Empty'>
+              <br>No watched items yet. Time for a movie marathon!
+            </div>
+          `;
+          return;
+        } else {
+          filters.style.display = "flex";
+        }
         const sortOrder = document.getElementById("watchedSort").value || "release_new";
-
         list.sort((a, b) => {
           if (sortOrder === "release_new") {
             return (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0);
@@ -828,25 +878,21 @@
             return (b.added || 0) - (a.added || 0);
           }
         });
-
-        if (list.length === 0) {
-          container.innerHTML = "<p>You haven't watched anything yet! How about a movie marathon?</p>";
-          return;
-        }
-
+        container.innerHTML = "";
         list.forEach((m) => {
+          const extraInfo = (m.media_type === "movie")
+            ? `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`
+            : "";
           const year = m.date ? m.date.substring(0, 4) : "N/A";
-          const extraInfo = (m.media_type === "tv")
-            ? `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`
-            : `<p class="card-text"><small>Duration: ${m.duration || "N/A"}h</small></p>`;
-
           const card = document.createElement("div");
           card.className = "card mb-3 media-card";
           card.innerHTML = `
             <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
-                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid"
+                     style="width:80px; height:120px; object-fit:cover;"
+                     onerror="this.src='https://via.placeholder.com/80x120.png?text=No+Image';">
               </div>
               <div class="col">
                 <div class="card-body">
@@ -859,6 +905,9 @@
               </div>
             </div>
           `;
+          card.addEventListener("click", function(){
+            openDetailsPage(m.id, m.media_type);
+          });
           card.querySelector(".delete-btn").addEventListener("click", function (e) {
             e.stopPropagation();
             let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
@@ -871,7 +920,6 @@
       }
       window.renderWatched = renderWatched;
 
-      // Debounce search
       function debounce(func, delay) {
         let timer;
         return function(...args) {
@@ -884,26 +932,21 @@
         if (query) performSearch(query);
         else document.getElementById("searchResults").innerHTML = "";
       }, 500));
-
       document.getElementById("watchlistSort").addEventListener("change", renderWatchlist);
       document.getElementById("watchedSort").addEventListener("change", renderWatched);
-
-      // Initial render
       renderWatchlist();
       renderWatched();
       updateProfileHeader();
     }
 
-    // ------------------ LOAD DETAILS + RENDER ------------------
     function loadDetails(mediaType, id) {
       if (!mediaType || !id) {
         document.getElementById("detailTitle").innerText = "Invalid Item";
         return;
       }
       const apiUrl = (mediaType === "movie")
-        ? `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`
-        : `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
-
+        ? `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits,seasons`
+        : `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits,seasons`;
       fetch(apiUrl)
         .then(response => {
           if (!response.ok) throw new Error("Network response was not ok");
@@ -921,66 +964,76 @@
     function renderDetails(details, mediaType) {
       const title = (mediaType === "movie") ? details.title : details.name;
       document.getElementById("detailTitle").innerText = title;
-
-      document.getElementById("detailDate").innerHTML =
-        `<strong>Release:</strong> ${details.release_date || details.first_air_date || "N/A"}`;
-      if (details.genres && details.genres.length > 0) {
-        const genreNames = details.genres.map(g => g.name).join(', ');
-        document.getElementById("detailGenres").innerHTML = `<strong>Genres:</strong> ${genreNames}`;
-      } else {
-        document.getElementById("detailGenres").innerHTML = `<strong>Genres:</strong> N/A`;
-      }
-
-      // Show or hide the season/episode fields as needed
-      if (mediaType === "tv") {
-        // If you want to show # of seasons/episodes for a series:
-        document.getElementById("detailSeasons").style.display = "inline-block";
-        document.getElementById("detailEpisodes").style.display = "inline-block";
-        document.getElementById("detailSeasons").innerHTML = `<strong>Seasons:</strong> ${details.number_of_seasons || 0}`;
-        document.getElementById("detailEpisodes").innerHTML = `<strong>Episodes:</strong> ${details.number_of_episodes || 0}`;
-
-        // If you do NOT want to show duration for series, hide it:
-        document.getElementById("detailDuration").style.display = "none";
-      } else {
-        // If movie, show duration
-        document.getElementById("detailDuration").style.display = "inline-block";
-        const runtimeHours = details.runtime ? (details.runtime / 60).toFixed(1) + "h" : "N/A";
-        document.getElementById("detailDuration").innerHTML = `<strong>Duration:</strong> ${runtimeHours}`;
-
-        // Hide seasons/episodes
-        document.getElementById("detailSeasons").style.display = "none";
-        document.getElementById("detailEpisodes").style.display = "none";
-      }
-
-      // Director (for movies) or empty if not found
+      
+      // Display only release year below title
+      const releaseYear = (details.release_date || details.first_air_date || "").substring(0,4) || "N/A";
+      document.getElementById("detailReleaseYear").innerText = releaseYear;
+      
+      // Director name (for movies) or creator (for TV, if available)
       let director = "N/A";
       if (details.credits && details.credits.crew) {
-        const directorObj = details.credits.crew.find(member => member.job === "Director");
+        const directorObj = details.credits.crew.find(member => member.job === "Director")
+                        || details.credits.crew.find(member => member.job === "Executive Producer");
         if (directorObj) director = directorObj.name;
       }
-      document.getElementById("detailDirector").innerHTML = `<strong>Director:</strong> ${director}`;
-
-      // Language + rating
-      document.getElementById("detailLanguage").innerHTML = `<strong>Language:</strong> ${details.original_language || "N/A"}`;
-      document.getElementById("detailRating").innerHTML =
-        `<strong>Rating:</strong> ${details.vote_average ? details.vote_average.toFixed(1) + " / 10" : "N/A"}`;
-
-      // Poster + overview
+      document.getElementById("detailDirector").innerText = "Director: " + director;
+      
+      // Additional Info
+      let infoHtml = "";
+      if (details.genres && details.genres.length > 0) {
+        infoHtml += `<p><strong>Genres:</strong> ${details.genres.map(g => g.name).join(', ')}</p>`;
+      }
+      if (mediaType === "movie") {
+        const runtimeHours = details.runtime ? (details.runtime / 60).toFixed(1) + "h" : "N/A";
+        infoHtml += `<p><strong>Duration:</strong> ${runtimeHours}</p>`;
+      } else if (mediaType === "tv") {
+        infoHtml += `<p><strong>Episode Runtime:</strong> ${
+          details.episode_run_time && details.episode_run_time.length > 0
+            ? details.episode_run_time[0] + " min"
+            : "N/A"
+        }</p>`;
+      }
+      infoHtml += `<p><strong>Language:</strong> ${details.original_language || "N/A"}</p>`;
+      infoHtml += `<p><strong>TMDB Rating:</strong> ${
+        details.vote_average ? details.vote_average.toFixed(1) + " / 10" : "N/A"
+      }</p>`;
+      document.getElementById("additionalInfo").innerHTML = infoHtml;
+      
+      // TV Series Info (Seasons/Episodes)
+      if (mediaType === "tv" && details.seasons && details.seasons.length > 0) {
+        document.getElementById("tvSeriesInfoSection").style.display = "block";
+        const seasonDropdown = document.getElementById("seasonDropdown");
+        seasonDropdown.innerHTML = "";
+        details.seasons.forEach(season => {
+          const option = document.createElement("option");
+          option.value = season.season_number;
+          option.text = season.name + (season.episode_count ? ` (${season.episode_count} episodes)` : "");
+          seasonDropdown.appendChild(option);
+        });
+        // Load episodes for the first season by default
+        loadEpisodes(details.id, details.seasons[0].season_number);
+        seasonDropdown.addEventListener("change", function() {
+          loadEpisodes(details.id, this.value);
+        });
+      } else {
+        document.getElementById("tvSeriesInfoSection").style.display = "none";
+      }
+      
+      // Description
+      document.getElementById("detailOverview").innerText = details.overview || "No description available.";
+      
+      // Poster
       const posterUrl = details.poster_path
         ? `https://image.tmdb.org/t/p/w300${details.poster_path}`
-        : "https://via.placeholder.com/300x450";
+        : "https://via.placeholder.com/300x450.png?text=No+Image";
       document.getElementById("detailPoster").src = posterUrl;
-      document.getElementById("detailOverview").innerText = details.overview || "No description available.";
-
-      // Prepare currentDetail object for saving
-      let durationVal = "0";
-      if (mediaType === "movie") {
-        durationVal = details.runtime ? (details.runtime / 60).toFixed(1) : "0";
-      } else if (details.episode_run_time && details.episode_run_time.length > 0) {
-        // Some series have an average run time
-        durationVal = (details.episode_run_time[0] / 60).toFixed(1);
-      }
-
+      
+      // Prepare currentDetail
+      const durationVal = (mediaType === "movie")
+        ? (details.runtime ? (details.runtime / 60).toFixed(1) : "0")
+        : (details.episode_run_time && details.episode_run_time.length > 0
+            ? (details.episode_run_time[0] / 60).toFixed(1)
+            : "0");
       currentDetail = {
         id: details.id,
         media_type: mediaType,
@@ -991,77 +1044,90 @@
         rating: null,
         overview: details.overview || "",
         duration: durationVal,
-        seasons: details.number_of_seasons || 0,
-        episodes: details.number_of_episodes || 0,
         added: Date.now()
       };
-
-      // Render cast
-      let castArray = [];
+      
+      // Cast
       if (details.credits && details.credits.cast) {
-        castArray = details.credits.cast.slice(0, 8);
+        const castList = document.getElementById("castList");
+        castList.innerHTML = "";
+        details.credits.cast.slice(0, 8).forEach(actor => {
+          const castItem = document.createElement("div");
+          castItem.className = "cast-item";
+          const profileUrl = actor.profile_path
+            ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+            : "https://via.placeholder.com/60.png?text=No+Image";
+          castItem.innerHTML = `
+            <img src="${profileUrl}" alt="${actor.name}" loading="lazy"
+                 onerror="this.src='https://via.placeholder.com/60.png?text=No+Image';">
+            <br><span>${actor.name}</span>
+          `;
+          castList.appendChild(castItem);
+        });
       }
-      const castList = document.getElementById("castList");
-      castList.innerHTML = "";
-      castArray.forEach(actor => {
-        const castItem = document.createElement("div");
-        castItem.className = "cast-item";
-        const profileUrl = actor.profile_path
-          ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
-          : "https://via.placeholder.com/60";
-        castItem.innerHTML = `
-          <img src="${profileUrl}" alt="${actor.name}" loading="lazy">
-          <span>${actor.name}</span>
-        `;
-        castList.appendChild(castItem);
-      });
-
-      // Check if the item is already in localStorage
+      
+      // Check if item is saved
       const mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       const found = mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type);
-
-      // If found in watchlist:
       if (found && !found.watched) {
-        // Hide "Add to Watchlist" button
         document.getElementById("addToWatchlistBtn").style.display = "none";
-        // Show rating section
         document.getElementById("detailsRatingSection").style.display = "block";
-      }
-      // If found and is watched, just hide everything or show rating result
-      else if (found && found.watched) {
+        document.getElementById("detailsUserRating").style.display = "none";
+      } else if (found && found.watched) {
         document.getElementById("addToWatchlistBtn").style.display = "none";
         document.getElementById("detailsRatingSection").style.display = "none";
-      }
-      else {
-        // Not in watchlist
-        document.getElementById("addToWatchlistBtn").style.display = "inline-block";
+        document.getElementById("detailsUserRating").style.display = "block";
+        document.getElementById("userRatingValue").innerText = found.rating;
+      } else {
+        document.getElementById("addToWatchlistBtn").style.display = "block";
         document.getElementById("detailsRatingSection").style.display = "none";
+        document.getElementById("detailsUserRating").style.display = "none";
       }
     }
 
-    // ------------------ ADD TO WATCHLIST HANDLER ------------------
+    function loadEpisodes(tvId, seasonNumber) {
+      const seasonUrl = `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}`;
+      fetch(seasonUrl)
+        .then(response => response.json())
+        .then(data => {
+          const episodeDropdown = document.getElementById("episodeDropdown");
+          episodeDropdown.innerHTML = "";
+          if (data.episodes && data.episodes.length > 0) {
+            episodeDropdown.disabled = false;
+            data.episodes.forEach(episode => {
+              const option = document.createElement("option");
+              option.value = episode.episode_number;
+              option.text = `Ep ${episode.episode_number}: ${episode.name}`;
+              episodeDropdown.appendChild(option);
+            });
+          } else {
+            episodeDropdown.innerHTML = "<option>No episodes found</option>";
+            episodeDropdown.disabled = true;
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching episodes:", error);
+          const episodeDropdown = document.getElementById("episodeDropdown");
+          episodeDropdown.innerHTML = "<option>Error loading episodes</option>";
+          episodeDropdown.disabled = true;
+        });
+    }
+
     document.getElementById("addToWatchlistBtn").addEventListener("click", function() {
       if (!currentDetail) return;
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       const found = mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type);
-
-      // Only add if not already present
       if (!found) {
         mediaList.push(currentDetail);
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
       }
-
-      // Hide the button, show rating
       document.getElementById("addToWatchlistBtn").style.display = "none";
       document.getElementById("detailsRatingSection").style.display = "block";
     });
 
-    // ------------------ INLINE RATING HANDLER ------------------
-    // Star selection
     document.querySelectorAll("#starRatingDetails i").forEach(star => {
       star.addEventListener("click", function() {
         selectedRating = parseInt(this.getAttribute("data-value"));
-        // Highlight the selected stars
         document.querySelectorAll("#starRatingDetails i").forEach(s => {
           const val = parseInt(s.getAttribute("data-value"));
           if (val <= selectedRating) s.classList.add("selected");
@@ -1070,31 +1136,22 @@
       });
     });
 
-    // Submit rating
     document.getElementById("submitRatingBtn").addEventListener("click", function() {
       if (!currentDetail) return;
       if (!selectedRating) {
         alert("Please select a star rating first.");
         return;
       }
-      // Move to watched
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
-      const index = mediaList.findIndex(
-        item => item.id === currentDetail.id && item.media_type === currentDetail.media_type
-      );
+      const index = mediaList.findIndex(item => item.id === currentDetail.id && item.media_type === currentDetail.media_type);
       if (index > -1) {
         mediaList[index].watched = true;
         mediaList[index].rating = selectedRating;
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
       }
-      // Close details overlay
       document.getElementById("detailsApp").style.display = "none";
       history.pushState("", document.title, window.location.pathname);
-
-      // Switch to watched tab to see it in the watched list
       document.querySelector('.nav-btn[data-tab="watched"]').click();
-
-      // Reset star rating for next time
       selectedRating = 0;
       document.querySelectorAll("#starRatingDetails i").forEach(star => star.classList.remove("selected"));
     });
