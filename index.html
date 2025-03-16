@@ -34,19 +34,21 @@
     .app-container {
       max-width: 500px;
       margin: 0 auto;
-      padding: 0 16px; /* Persistent left/right padding */
+      padding: 16px; /* Added padding all around */
       position: relative;
       min-height: 100vh;
       background: var(--card-bg);
-      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      margin-top: 20px;
     }
     .app-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
+      padding-bottom: 10px;
       border-bottom: 1px solid #e1e4e8;
-      background-color: var(--card-bg);
+      margin-bottom: 10px;
     }
     #currentTabTitle {
       font-size: 1.5rem;
@@ -74,7 +76,7 @@
       object-fit: cover;
     }
     .app-content {
-      padding: 16px 0;
+      padding: 10px 0;
     }
     .tab {
       display: none;
@@ -131,7 +133,7 @@
       transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       background: var(--card-bg);
-      position: relative;
+      padding: 10px;
     }
     .media-card:hover {
       transform: translateY(-3px);
@@ -141,6 +143,7 @@
       width: 80px;
       height: 120px;
       object-fit: cover;
+      margin-right: 10px;
     }
     .media-card .delete-btn {
       position: absolute;
@@ -173,6 +176,9 @@
       font-size: 1.2rem;
       color: var(--primary-color);
       cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
     .profile-card .profile-img {
       width: 100px;
@@ -195,6 +201,7 @@
     .profile-card .profile-stats {
       font-size: 0.9rem;
       color: #555;
+      margin-top: 10px;
     }
     /* ------------------ DETAILS VIEW (Overlay) ------------------ */
     #detailsApp {
@@ -226,6 +233,7 @@
       width: 180px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-bottom: 10px;
     }
     .btn-add-watchlist {
       background-color: var(--primary-color);
@@ -272,6 +280,7 @@
       padding-top: 10px;
       font-size: 0.95em;
       color: #555;
+      margin-bottom: 10px;
     }
     .details-cast {
       margin-top: 15px;
@@ -337,7 +346,7 @@
   </style>
 </head>
 <body>
-  <!-- Message container for watchlist notifications -->
+  <!-- Message container (currently not used) -->
   <div id="messageContainer"></div>
 
   <!-- MAIN APP VIEW -->
@@ -496,6 +505,9 @@
   <script>
     const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
     let currentDetail = null;
+    // Global variables to store the current media id/type for rating
+    let currentMediaId = null;
+    let currentMediaType = null;
     
     const urlParams = new URLSearchParams(window.location.search);
     const mediaTypeParam = urlParams.get("media_type");
@@ -510,7 +522,7 @@
       document.getElementById("detailsApp").style.display = "none";
     }
 
-    // Global bottom navigation handler (without auto-refresh)
+    // Global bottom navigation (without auto-refresh)
     document.querySelectorAll(".nav-btn").forEach(btn => {
       btn.addEventListener("click", function () {
         if (document.getElementById("detailsApp").style.display === "block") {
@@ -528,23 +540,6 @@
         if(tab === "watched") renderWatched();
       });
     });
-
-    // Show a temporary message (3 seconds)
-    function showMessage(msg) {
-      const container = document.getElementById("messageContainer");
-      const messageDiv = document.createElement("div");
-      messageDiv.style.background = "rgba(0,0,0,0.7)";
-      messageDiv.style.color = "#fff";
-      messageDiv.style.padding = "10px 20px";
-      messageDiv.style.margin = "10px auto";
-      messageDiv.style.borderRadius = "5px";
-      messageDiv.style.display = "inline-block";
-      messageDiv.innerText = msg;
-      container.appendChild(messageDiv);
-      setTimeout(() => {
-        messageDiv.remove();
-      }, 3000);
-    }
 
     function initMainApp() {
       function saveData(mediaList, activityLog, userProfile) {
@@ -691,7 +686,7 @@
           container.innerHTML = "<p>Your watchlist is feeling lonely... Add some awesome media!</p>";
           return;
         }
-        list.forEach((m, idx) => {
+        list.forEach((m) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
           let extraInfo = m.media_type === "tv" 
             ? `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`
@@ -702,7 +697,7 @@
             <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
-                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;" loading="lazy">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
               </div>
               <div class="col">
                 <div class="card-body">
@@ -710,7 +705,7 @@
                   <p class="card-text"><small>${year}</small></p>
                   ${extraInfo}
                   <p class="card-text"><small>${m.overview || "No synopsis available."}</small></p>
-                  <button class="btn btn-sm btn-outline-secondary mark-btn" data-index="${idx}" style="margin-top:10px;">I Watched It</button>
+                  <button class="btn btn-sm btn-outline-secondary mark-btn" data-id="${m.id}" data-media-type="${m.media_type}" style="margin-top:10px;">I Watched It</button>
                 </div>
               </div>
             </div>
@@ -718,16 +713,15 @@
           card.querySelector(".delete-btn").addEventListener("click", function (e) {
             e.stopPropagation();
             let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
-            const notWatched = updatedList.filter(m => !m.watched);
-            const itemToDelete = notWatched[idx];
-            updatedList = updatedList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
+            updatedList = updatedList.filter(item => !(item.id === m.id && item.media_type === m.media_type));
             localStorage.setItem("mediaList", JSON.stringify(updatedList));
             renderWatchlist();
           });
           card.querySelector(".mark-btn").addEventListener("click", function (e) {
             e.stopPropagation();
-            const idx = this.getAttribute("data-index");
-            openRatingModal(idx);
+            currentMediaId = this.getAttribute("data-id");
+            currentMediaType = this.getAttribute("data-media-type");
+            openRatingModal();
           });
           container.appendChild(card);
         });
@@ -753,7 +747,7 @@
           container.innerHTML = "<p>You haven't watched anything yet! How about a movie marathon?</p>";
           return;
         }
-        list.forEach((m, idx) => {
+        list.forEach((m) => {
           const year = m.date ? m.date.substring(0, 4) : "N/A";
           let extraInfo = m.media_type === "tv"
             ? `<p class="card-text"><small>Seasons: ${m.seasons || "N/A"} | Episodes: ${m.episodes || "N/A"}</small></p>`
@@ -764,7 +758,7 @@
             <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
             <div class="row g-0">
               <div class="col-auto">
-                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;" loading="lazy">
+                <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:80px; height:120px; object-fit:cover;">
               </div>
               <div class="col">
                 <div class="card-body">
@@ -780,9 +774,7 @@
           card.querySelector(".delete-btn").addEventListener("click", function (e) {
             e.stopPropagation();
             let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
-            const watchedItems = updatedList.filter(m => m.watched);
-            const itemToDelete = watchedItems[idx];
-            updatedList = updatedList.filter(m => !(m.id === itemToDelete.id && m.media_type === itemToDelete.media_type));
+            updatedList = updatedList.filter(item => !(item.id === m.id && item.media_type === m.media_type));
             localStorage.setItem("mediaList", JSON.stringify(updatedList));
             renderWatched();
           });
@@ -791,11 +783,10 @@
       }
       window.renderWatched = renderWatched;
 
-      let currentMarkIndex = null;
-      const ratingModal = new bootstrap.Modal(document.getElementById("ratingModal"));
-      function openRatingModal(index) {
-        currentMarkIndex = index;
+      function openRatingModal() {
+        // Clear previous star selections
         document.querySelectorAll("#starRating i").forEach(star => star.classList.remove("selected"));
+        const ratingModal = new bootstrap.Modal(document.getElementById("ratingModal"));
         ratingModal.show();
       }
       document.querySelectorAll("#starRating i").forEach(star => {
@@ -807,12 +798,13 @@
             else s.classList.remove("selected");
           });
           let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
-          const notWatched = updatedList.filter(m => !m.watched);
-          const item = notWatched[currentMarkIndex];
-          const originalIndex = updatedList.findIndex(m => m.id === item.id && m.media_type === item.media_type);
-          updatedList[originalIndex].watched = true;
-          updatedList[originalIndex].rating = rating;
-          localStorage.setItem("mediaList", JSON.stringify(updatedList));
+          const index = updatedList.findIndex(item => item.id == currentMediaId && item.media_type === currentMediaType);
+          if(index > -1) {
+            updatedList[index].watched = true;
+            updatedList[index].rating = rating;
+            localStorage.setItem("mediaList", JSON.stringify(updatedList));
+          }
+          const ratingModal = bootstrap.Modal.getInstance(document.getElementById("ratingModal"));
           ratingModal.hide();
           renderWatchlist();
           renderWatched();
@@ -928,13 +920,10 @@
       if (!mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)) {
         mediaList.push(currentDetail);
         localStorage.setItem("mediaList", JSON.stringify(mediaList));
-        showMessage(`${currentDetail.title} added to your watchlist`);
-      } else {
-        showMessage(`${currentDetail.title} is already in your watchlist`);
       }
       document.getElementById("detailsApp").style.display = "none";
       history.pushState("", document.title, window.location.pathname);
-      // Switch to watchlist tab and re-render
+      // Switch to watchlist tab and re-render in real time
       document.querySelector('.nav-btn[data-tab="watchlist"]').click();
     });
   </script>
