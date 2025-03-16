@@ -129,24 +129,7 @@
         color: #666;
         margin-top: 0.25rem;
       }
-      /* Genre Capsules – "All" option added back */
-      #genreCapsules {
-        margin-bottom: 1.5rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-      .badge.genre-capsule {
-        background-color: var(--secondary-color) !important;
-        color: #fff !important;
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 20px;
-      }
-      .badge.genre-capsule.selected {
-        background-color: var(--primary-color) !important;
-      }
-      /* Grid container for Popular Movies */
+      /* Grid container for Trending sections */
       .grid-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -504,28 +487,32 @@
             </select>
           </div>
           <div id="searchResults"></div>
-          <div id="genreCapsules"></div>
-          <!-- Popular Movies Section -->
-          <section id="popularSection">
-            <h3>Popular Movies</h3>
-            <div id="popularList" class="grid-container"></div>
+          <!-- Trending Movies Section -->
+          <section id="trendingMoviesSection">
+            <h3>Trending Movies This Week</h3>
+            <div id="trendingMoviesList" class="grid-container"></div>
           </section>
-          <!-- Top Rated Section -->
-          <section id="topRatedSection" class="carousel-section">
-            <h3>Top Rated</h3>
-            <div class="carousel-wrapper">
-              <button id="topRatedLeftArrow" class="carousel-arrow left"><i class="fas fa-chevron-left"></i></button>
-              <div id="topRatedCarousel" class="carousel-container"></div>
-              <button id="topRatedRightArrow" class="carousel-arrow right"><i class="fas fa-chevron-right"></i></button>
-            </div>
+          <!-- Trending TV Section -->
+          <section id="trendingTVSection">
+            <h3>Trending TV Series This Week</h3>
+            <div id="trendingTVList" class="grid-container"></div>
           </section>
-          <!-- Upcoming Section -->
+          <!-- Upcoming Section (moved above Top Rated) -->
           <section id="upcomingSection" class="carousel-section">
             <h3>Upcoming</h3>
             <div class="carousel-wrapper">
               <button id="upcomingLeftArrow" class="carousel-arrow left"><i class="fas fa-chevron-left"></i></button>
               <div id="upcomingCarousel" class="carousel-container"></div>
               <button id="upcomingRightArrow" class="carousel-arrow right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </section>
+          <!-- Top Rated Section (swapped with Upcoming) -->
+          <section id="topRatedSection" class="carousel-section">
+            <h3>Top Rated</h3>
+            <div class="carousel-wrapper">
+              <button id="topRatedLeftArrow" class="carousel-arrow left"><i class="fas fa-chevron-left"></i></button>
+              <div id="topRatedCarousel" class="carousel-container"></div>
+              <button id="topRatedRightArrow" class="carousel-arrow right"><i class="fas fa-chevron-right"></i></button>
             </div>
           </section>
         </div>
@@ -656,7 +643,7 @@
       <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
         <i class="fas fa-bookmark"></i>
       </button>
-      <button type="button" class="nav-btn active" data-tab="search" title="Explore">
+      <button type="button" class="nav-btn" data-tab="search" title="Explore">
         <i class="fas fa-search"></i>
       </button>
       <button type="button" class="nav-btn" data-tab="watched" title="Watched">
@@ -725,7 +712,7 @@
         };
       });
 
-      // Navigate between tabs
+      // Navigate between tabs and reset Explore search if needed
       document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", function () {
           if (document.getElementById("detailsApp").style.display === "block") {
@@ -738,6 +725,18 @@
           document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
           document.getElementById(tab).classList.add("active-tab");
           document.getElementById("currentTabTitle").innerText = this.title;
+          if(tab === "search") {
+            // Reset Explore search for enhanced user friendliness
+            document.getElementById("searchQuery").value = "";
+            document.getElementById("searchResults").innerHTML = "";
+            document.getElementById("trendingMoviesSection").style.display = "block";
+            document.getElementById("trendingTVSection").style.display = "block";
+            document.getElementById("upcomingSection").style.display = "block";
+            document.getElementById("topRatedSection").style.display = "block";
+            loadTrending();
+            loadUpcoming();
+            loadTopRated();
+          }
           if (tab === "profile") renderProfile();
           if (tab === "watchlist") renderWatchlist();
           if (tab === "watched") renderWatched();
@@ -818,25 +817,30 @@
           }
         });
 
+        // Add search input listeners for Watchlist and Watched for live filtering
+        document.getElementById("watchlistSearch").addEventListener("input", renderWatchlist);
+        document.getElementById("watchedSearch").addEventListener("input", renderWatched);
+
         // Explore search input behavior with debouncing
         const searchInput = document.getElementById("searchQuery");
         searchInput.addEventListener("input", debounce(function () {
           const query = this.value.trim();
           if(query) {
-            document.getElementById("genreCapsules").style.display = "none";
-            document.getElementById("popularSection").style.display = "none";
-            document.getElementById("topRatedSection").style.display = "none";
+            // Hide default sections when searching
+            document.getElementById("trendingMoviesSection").style.display = "none";
+            document.getElementById("trendingTVSection").style.display = "none";
             document.getElementById("upcomingSection").style.display = "none";
+            document.getElementById("topRatedSection").style.display = "none";
             performSearch(query);
           } else {
             document.getElementById("searchResults").innerHTML = "";
-            document.getElementById("popularSection").style.display = "block";
-            document.getElementById("topRatedSection").style.display = "block";
+            document.getElementById("trendingMoviesSection").style.display = "block";
+            document.getElementById("trendingTVSection").style.display = "block";
             document.getElementById("upcomingSection").style.display = "block";
-            document.getElementById("genreCapsules").style.display = "flex";
-            loadPopular();
-            loadTopRated();
+            document.getElementById("topRatedSection").style.display = "block";
+            loadTrending();
             loadUpcoming();
+            loadTopRated();
           }
         }, 500));
 
@@ -1038,7 +1042,6 @@
                     <h5 class="card-title">${m.title}</h5>
                     <p class="card-text"><small>${year}</small></p>
                     ${extraInfo}
-                    <p class="card-text"><small>${m.overview || "No synopsis available."}</small></p>
                     <p class="card-text"><small>Rating: ${m.rating ? m.rating + " / 5" : "Not rated"}</small></p>
                   </div>
                 </div>
@@ -1080,28 +1083,38 @@
         renderWatchlist();
         renderWatched();
         updateProfileHeader();
-        loadPopular();
-        loadTopRated();
+        loadTrending();
         loadUpcoming();
-        loadGenres();
+        loadTopRated();
       }
 
-      async function loadPopular() {
-        const container = document.getElementById("popularList");
-        container.innerHTML = '<div class="spinner"><i class="fas fa-spinner fa-spin"></i> Loading Popular Movies...</div>';
-        const url = `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+      async function loadTrending() {
+        // For Trending Movies
+        const moviesContainer = document.getElementById("trendingMoviesList");
+        moviesContainer.innerHTML = '<div class="spinner"><i class="fas fa-spinner fa-spin"></i> Loading Trending Movies...</div>';
+        // For Trending TV Series
+        const tvContainer = document.getElementById("trendingTVList");
+        tvContainer.innerHTML = '<div class="spinner"><i class="fas fa-spinner fa-spin"></i> Loading Trending TV Series...</div>';
+        const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}`;
         try {
           const response = await fetch(url);
           if (!response.ok) throw new Error("Network response was not ok");
           const data = await response.json();
-          container.innerHTML = "";
-          const items = data.results.slice(0, 50);
-          items.forEach(item => {
-            container.appendChild(createMovieCard(item, "movie"));
+          // Filter and slice for movies and TV separately
+          const trendingMovies = data.results.filter(item => item.media_type === "movie").slice(0, 20);
+          const trendingTV = data.results.filter(item => item.media_type === "tv").slice(0, 20);
+          moviesContainer.innerHTML = "";
+          tvContainer.innerHTML = "";
+          trendingMovies.forEach(item => {
+            moviesContainer.appendChild(createMovieCard(item, "movie"));
+          });
+          trendingTV.forEach(item => {
+            tvContainer.appendChild(createMovieCard(item, "tv"));
           });
         } catch (error) {
-          console.error("Error loading popular movies:", error);
-          container.innerHTML = `<div class='empty-state'>Error loading popular movies.</div>`;
+          console.error("Error loading trending items:", error);
+          moviesContainer.innerHTML = `<div class='empty-state'>Error loading trending movies.</div>`;
+          tvContainer.innerHTML = `<div class='empty-state'>Error loading trending TV series.</div>`;
         }
       }
 
@@ -1140,65 +1153,6 @@
         } catch (error) {
           console.error("Error loading upcoming movies:", error);
           container.innerHTML = `<div class='empty-state'>Error loading upcoming movies.</div>`;
-        }
-      }
-
-      function loadGenres() {
-        const container = document.getElementById("genreCapsules");
-        const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}&language=en-US`;
-        fetch(url)
-          .then(response => {
-            if (!response.ok) throw new Error("Network response was not ok");
-            return response.json();
-          })
-          .then(data => {
-            container.innerHTML = "";
-            const allCapsule = document.createElement("span");
-            allCapsule.className = "badge genre-capsule selected";
-            allCapsule.style.marginRight = "5px";
-            allCapsule.innerText = "All";
-            allCapsule.addEventListener("click", function() {
-              document.querySelectorAll("#genreCapsules .genre-capsule").forEach(b => b.classList.remove("selected"));
-              this.classList.add("selected");
-              loadPopular();
-            });
-            container.appendChild(allCapsule);
-            data.genres.forEach(genre => {
-              const capsule = document.createElement("span");
-              capsule.className = "badge genre-capsule";
-              capsule.style.marginRight = "5px";
-              capsule.innerText = genre.name;
-              capsule.dataset.genreId = genre.id;
-              capsule.addEventListener("click", function() {
-                document.querySelectorAll("#genreCapsules .genre-capsule").forEach(b => b.classList.remove("selected"));
-                this.classList.add("selected");
-                loadPopularByGenre(this.dataset.genreId);
-              });
-              container.appendChild(capsule);
-            });
-          })
-          .catch(error => {
-            console.error("Error loading genres:", error);
-            container.innerHTML = "Error loading genres.";
-          });
-      }
-
-      async function loadPopularByGenre(genreId) {
-        const container = document.getElementById("popularList");
-        container.innerHTML = '<div class="spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-        const url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=1`;
-        try {
-          const response = await fetch(url);
-          if (!response.ok) throw new Error("Network response was not ok");
-          const data = await response.json();
-          container.innerHTML = "";
-          const items = data.results.slice(0, 50);
-          items.forEach(item => {
-            container.appendChild(createMovieCard(item, "movie"));
-          });
-        } catch (error) {
-          console.error("Error loading movies by genre:", error);
-          container.innerHTML = `<div class='empty-state'>Error loading movies by genre.</div>`;
         }
       }
 
