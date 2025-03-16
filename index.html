@@ -4,14 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Media Watchlist - Lotus Garden</title>
-
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
     <style>
       /* Lotus Garden Color Palette */
       :root {
@@ -204,51 +202,43 @@
       }
       .media-card .card-text { font-size: 0.75rem; margin: 0; }
       /* Card buttons (View, Rate, Trash) for watchlist and watched */
-      /* Updated Card Buttons for Watchlist and Watched Cards */
-.card-buttons {
-  position: absolute;
-  top: 8px;  /* Increased spacing from top */
-  right: 8px; /* Increased spacing from right */
-  display: flex;
-  gap: 6px;  /* Increased gap between buttons */
-}
-.card-buttons .btn {
-  padding: 2px 6px;
-  font-size: 0.8rem;
-  line-height: 1;
-  border-width: 1px;
-}
-
-/* View Button: Uses Lotus Garden accent #ADEBB3 */
-.card-buttons .view-btn {
-  border-color: #ADEBB3;
-  color: #ADEBB3;
-}
-.card-buttons .view-btn:hover {
-  background-color: #ADEBB3;
-  color: #ffffff;
-}
-
-/* Rate Button: Default uses #EBAEE6, hover turns to #FF857A */
-.card-buttons .rate-btn {
-  border-color: #EBAEE6;
-  color: #EBAEE6;
-}
-.card-buttons .rate-btn:hover {
-  background-color: #FF857A;
-  color: #ffffff;
-}
-
-/* Trash Button: Uses dark tone #6B403C */
-.card-buttons .trash-btn {
-  border-color: #6B403C;
-  color: #6B403C;
-}
-.card-buttons .trash-btn:hover {
-  background-color: #6B403C;
-  color: #ffffff;
-}
-
+      .card-buttons {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 6px;
+      }
+      .card-buttons .btn {
+        padding: 2px 6px;
+        font-size: 0.8rem;
+        line-height: 1;
+        border-width: 1px;
+      }
+      .card-buttons .view-btn {
+        border-color: #ADEBB3;
+        color: #ADEBB3;
+      }
+      .card-buttons .view-btn:hover {
+        background-color: #ADEBB3;
+        color: #ffffff;
+      }
+      .card-buttons .rate-btn {
+        border-color: #EBAEE6;
+        color: #EBAEE6;
+      }
+      .card-buttons .rate-btn:hover {
+        background-color: #FF857A;
+        color: #ffffff;
+      }
+      .card-buttons .trash-btn {
+        border-color: #6B403C;
+        color: #6B403C;
+      }
+      .card-buttons .trash-btn:hover {
+        background-color: #6B403C;
+        color: #ffffff;
+      }
       /* PROFILE */
       .profile-card {
         position: relative;
@@ -305,7 +295,6 @@
         padding: 20px;
         position: relative;
       }
-      /* Header Section */
       .details-header {
         display: flex;
         gap: 20px;
@@ -330,7 +319,6 @@
         margin: 5px 0;
         color: #555;
       }
-      /* DETAILS ACTIONS */
       #detailsActions {
         display: flex;
         gap: 10px;
@@ -349,7 +337,6 @@
       }
       .btn-add-watchlist:disabled { background-color: #aaa; cursor: not-allowed; }
       .btn-add-watchlist:hover:not(:disabled) { background-color: var(--primary-hover); }
-      /* Watch Trailer button – outlined style */
       #watchTrailerBtn {
         border: 1px solid var(--primary-color);
         background: transparent;
@@ -361,7 +348,6 @@
         transition: background-color 0.3s;
       }
       #watchTrailerBtn:hover { background-color: rgba(255,133,122,0.1); }
-      /* Additional Info Section */
       .additional-info-section {
         margin-bottom: 20px;
         background: #f8f9fa;
@@ -369,10 +355,8 @@
         border-radius: 8px;
       }
       .additional-info-section p { margin: 5px 0; font-size: 0.95rem; }
-      /* TV Series Info Section */
       .tv-series-info-section { margin-bottom: 20px; }
       .tv-series-info-section label { margin-bottom: 5px; display: block; }
-      /* Description Section */
       .details-description-section { margin-bottom: 20px; }
       .details-description-section h3 { margin-bottom: 10px; }
       .detail-overview {
@@ -380,7 +364,6 @@
         line-height: 1.5;
         color: #444;
       }
-      /* Cast Section */
       .details-cast { margin: 0 20px 15px 20px; }
       .details-cast h3 { margin-bottom: 0.5rem; font-size: 1.2rem; }
       .details-cast-list {
@@ -403,7 +386,6 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         margin-bottom: 5px;
       }
-      /* EMPTY STATE */
       .empty-state {
         text-align: center;
         padding: 40px 20px;
@@ -416,7 +398,6 @@
         object-fit: contain;
         margin-bottom: 20px;
       }
-      /* NAVIGATION */
       .bottom-nav {
         position: fixed;
         bottom: 0;
@@ -443,12 +424,10 @@
         transition: color 0.3s;
       }
       .nav-btn.active { color: var(--primary-color); }
-      /* LOADING SPINNER */
       .spinner {
         text-align: center;
         padding: 20px;
       }
-      /* MESSAGE CONTAINER */
       #messageContainer {
         position: fixed;
         top: 80px;
@@ -456,7 +435,6 @@
         text-align: center;
         z-index: 500;
       }
-      /* MODAL STYLES */
       .modal-header, .modal-footer {
         background-color: #ffffff;
         color: var(--text-color);
@@ -470,7 +448,6 @@
         background-color: var(--primary-hover);
         border-color: var(--primary-hover);
       }
-      /* STAR RATING ANIMATION */
       @keyframes pop {
         0% { transform: scale(1); }
         50% { transform: scale(1.3); }
@@ -488,7 +465,6 @@
   <body>
     <!-- Message Container -->
     <div id="messageContainer"></div>
-
     <!-- MAIN APP VIEW -->
     <div id="mainApp" class="app-container">
       <!-- HEADER -->
@@ -501,7 +477,6 @@
           </div>
         </div>
       </header>
-
       <!-- CONTENT TABS -->
       <main class="app-content">
         <!-- WATCHLIST TAB -->
@@ -518,10 +493,8 @@
           </div>
           <div id="watchlistContainer"></div>
         </div>
-
         <!-- EXPLORE TAB -->
         <div id="search" class="tab active-tab">
-          <!-- Search group: Search input & Filter select -->
           <div class="search-group">
             <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series...">
             <select id="searchMediaType" class="form-select">
@@ -530,19 +503,13 @@
               <option value="tv">TV Series</option>
             </select>
           </div>
-
-          <!-- Search Results -->
           <div id="searchResults"></div>
-
-          <!-- Genre Capsules -->
           <div id="genreCapsules"></div>
-
           <!-- Popular Movies Section -->
           <section id="popularSection">
             <h3>Popular Movies</h3>
             <div id="popularList" class="grid-container"></div>
           </section>
-
           <!-- Top Rated Section -->
           <section id="topRatedSection" class="carousel-section">
             <h3>Top Rated</h3>
@@ -552,7 +519,6 @@
               <button id="topRatedRightArrow" class="carousel-arrow right"><i class="fas fa-chevron-right"></i></button>
             </div>
           </section>
-
           <!-- Upcoming Section -->
           <section id="upcomingSection" class="carousel-section">
             <h3>Upcoming</h3>
@@ -563,7 +529,6 @@
             </div>
           </section>
         </div>
-
         <!-- WATCHED TAB -->
         <div id="watched" class="tab">
           <div id="watchedControls" class="d-flex justify-content-between align-items-center mb-3">
@@ -578,7 +543,6 @@
           </div>
           <div id="watchedContainer"></div>
         </div>
-
         <!-- PROFILE TAB -->
         <div id="profile" class="tab">
           <div class="profile-card">
@@ -595,7 +559,6 @@
           </div>
         </div>
       </main>
-
       <!-- EDIT PROFILE MODAL -->
       <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -624,7 +587,6 @@
           </div>
         </div>
       </div>
-
       <!-- RATING MODAL -->
       <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -650,7 +612,6 @@
         </div>
       </div>
     </div>
-
     <!-- DETAILS PAGE COMPONENT -->
     <div id="detailsApp">
       <div class="details-container">
@@ -690,7 +651,6 @@
         </div>
       </div>
     </div>
-
     <!-- NAVIGATION COMPONENT -->
     <nav class="bottom-nav">
       <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
@@ -706,30 +666,66 @@
         <i class="fas fa-user"></i>
       </button>
     </nav>
-
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
       let currentDetail = null;
-      let ratingTarget = null; // holds the media item to be rated
+      let ratingTarget = null;
       let selectedRating = 0;
+
+      // Function to open the details page
+      function openDetailsPage(id, mediaType) {
+        history.pushState({}, "", `?media_type=${mediaType}&id=${id}`);
+        document.getElementById("detailsApp").style.display = "block";
+        loadDetails(mediaType, id);
+      }
+
+      // Helper: create a movie card element and attach auto-open event via onclick
+      function createMovieCard(item, mediaType = "movie", options = {}) {
+        const title = (mediaType === "movie") ? item.title : item.name;
+        const date = (mediaType === "movie") ? item.release_date : item.first_air_date;
+        const year = date ? date.substring(0, 4) : "N/A";
+        const posterUrl = item.poster_path 
+              ? `https://image.tmdb.org/t/p/w200${item.poster_path}` 
+              : "https://via.placeholder.com/200x300.png?text=No+Image";
+        const card = document.createElement("div");
+        card.className = "search-card";
+        if(options.minWidth) card.style.minWidth = options.minWidth;
+        card.innerHTML = `
+          <img src="${posterUrl}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300.png?text=No+Image';">
+          <div class="card-body">
+            <h5 class="card-title">${title}</h5>
+            <p class="card-text"><small>${year}</small></p>
+          </div>
+        `;
+        // Assign click handler directly
+        card.onclick = function() {
+          openDetailsPage(item.id, mediaType);
+        };
+        return card;
+      }
 
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("searchQuery").value = "";
+        initMainApp();
+
+        // Attach carousel arrow listeners only once
+        document.getElementById("topRatedLeftArrow").onclick = () => {
+          document.getElementById("topRatedCarousel").scrollBy({ left: -300, behavior: "smooth" });
+        };
+        document.getElementById("topRatedRightArrow").onclick = () => {
+          document.getElementById("topRatedCarousel").scrollBy({ left: 300, behavior: "smooth" });
+        };
+        document.getElementById("upcomingLeftArrow").onclick = () => {
+          document.getElementById("upcomingCarousel").scrollBy({ left: -300, behavior: "smooth" });
+        };
+        document.getElementById("upcomingRightArrow").onclick = () => {
+          document.getElementById("upcomingCarousel").scrollBy({ left: 300, behavior: "smooth" });
+        };
       });
-      initMainApp();
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const mediaTypeParam = urlParams.get("media_type");
-      const idParam = urlParams.get("id");
-      if (mediaTypeParam && idParam) {
-        document.getElementById("detailsApp").style.display = "block";
-        loadDetails(mediaTypeParam, idParam);
-      } else {
-        document.getElementById("detailsApp").style.display = "none";
-      }
-
+      // Navigate between tabs
       document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", function () {
           if (document.getElementById("detailsApp").style.display === "block") {
@@ -822,7 +818,7 @@
           }
         });
 
-        // Explore search input behavior
+        // Explore search input behavior with debouncing
         const searchInput = document.getElementById("searchQuery");
         searchInput.addEventListener("input", debounce(function () {
           const query = this.value.trim();
@@ -891,26 +887,7 @@
           container.innerHTML = "";
           results.forEach(item => {
             if (item.media_type !== "movie" && item.media_type !== "tv") return;
-            const title = (item.media_type === "movie") ? item.title : item.name;
-            const date = (item.media_type === "movie") ? item.release_date : item.first_air_date;
-            const year = date ? date.substring(0, 4) : "N/A";
-            const posterUrl = item.poster_path
-              ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-              : "https://via.placeholder.com/200x300.png?text=No+Image";
-            const card = document.createElement("div");
-            card.className = "search-card";
-            card.innerHTML = `
-              <img src="${posterUrl}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300.png?text=No+Image';">
-              <div class="card-body">
-                <h5 class="card-title">${title}</h5>
-                <p class="card-text"><small>${year}</small></p>
-              </div>
-            `;
-            // Allow the entire card to be clickable in the Explore page.
-            card.addEventListener("click", function() {
-              openDetailsPage(item.id, item.media_type);
-            });
-            container.appendChild(card);
+            container.appendChild(createMovieCard(item, item.media_type));
           });
         }
 
@@ -920,7 +897,7 @@
           loadDetails(mediaType, id);
         }
 
-        // Render Watchlist cards with three top-right buttons (non-clickable card body)
+        // Render Watchlist cards
         function renderWatchlist() {
           mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
           const container = document.getElementById("watchlistContainer");
@@ -981,7 +958,6 @@
                 </div>
               </div>
             `;
-            // Button event listeners for watchlist
             card.querySelector(".view-btn").addEventListener("click", function (e) {
               e.stopPropagation();
               openDetailsPage(m.id, m.media_type);
@@ -1006,7 +982,7 @@
         }
         window.renderWatchlist = renderWatchlist;
 
-        // Render Watched cards with three top-right buttons (non-clickable card body)
+        // Render Watched cards
         function renderWatched() {
           mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
           const container = document.getElementById("watchedContainer");
@@ -1068,7 +1044,6 @@
                 </div>
               </div>
             `;
-            // Button event listeners for watched list
             card.querySelector(".view-btn").addEventListener("click", function (e) {
               e.stopPropagation();
               openDetailsPage(m.id, m.media_type);
@@ -1105,8 +1080,6 @@
         renderWatchlist();
         renderWatched();
         updateProfileHeader();
-
-        // Load sections for Explore tab
         loadPopular();
         loadTopRated();
         loadUpcoming();
@@ -1124,25 +1097,7 @@
           container.innerHTML = "";
           const items = data.results.slice(0, 50);
           items.forEach(item => {
-            const title = item.title;
-            const date = item.release_date || "";
-            const year = date ? date.substring(0, 4) : "N/A";
-            const posterUrl = item.poster_path
-              ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-              : "https://via.placeholder.com/200x300.png?text=No+Image";
-            const card = document.createElement("div");
-            card.className = "search-card";
-            card.innerHTML = `
-              <img src="${posterUrl}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300.png?text=No+Image';">
-              <div class="card-body">
-                <h5 class="card-title">${title}</h5>
-                <p class="card-text"><small>${year}</small></p>
-              </div>
-            `;
-            card.addEventListener("click", function () {
-              openDetailsPage(item.id, "movie");
-            });
-            container.appendChild(card);
+            container.appendChild(createMovieCard(item, "movie"));
           });
         } catch (error) {
           console.error("Error loading popular movies:", error);
@@ -1161,37 +1116,12 @@
           container.innerHTML = "";
           const items = data.results.slice(0, 15);
           items.forEach(item => {
-            const title = item.title;
-            const date = item.release_date || "";
-            const year = date ? date.substring(0, 4) : "N/A";
-            const posterUrl = item.poster_path
-              ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-              : "https://via.placeholder.com/200x300.png?text=No+Image";
-            const card = document.createElement("div");
-            card.className = "search-card";
-            card.style.minWidth = "140px";
-            card.innerHTML = `
-              <img src="${posterUrl}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300.png?text=No+Image';">
-              <div class="card-body">
-                <h5 class="card-title" style="font-size:0.9rem;">${title}</h5>
-                <p class="card-text"><small>${year}</small></p>
-              </div>
-            `;
-            card.addEventListener("click", function () {
-              openDetailsPage(item.id, "movie");
-            });
-            container.appendChild(card);
+            container.appendChild(createMovieCard(item, "movie", {minWidth: "140px"}));
           });
         } catch (error) {
           console.error("Error loading top rated movies:", error);
           container.innerHTML = `<div class='empty-state'>Error loading top rated movies.</div>`;
         }
-        document.getElementById("topRatedLeftArrow").addEventListener("click", function() {
-          container.scrollBy({ left: -300, behavior: "smooth" });
-        });
-        document.getElementById("topRatedRightArrow").addEventListener("click", function() {
-          container.scrollBy({ left: 300, behavior: "smooth" });
-        });
       }
 
       async function loadUpcoming() {
@@ -1205,37 +1135,12 @@
           container.innerHTML = "";
           const items = data.results.slice(0, 15);
           items.forEach(item => {
-            const title = item.title;
-            const date = item.release_date || "";
-            const year = date ? date.substring(0, 4) : "N/A";
-            const posterUrl = item.poster_path
-              ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-              : "https://via.placeholder.com/200x300.png?text=No+Image";
-            const card = document.createElement("div");
-            card.className = "search-card";
-            card.style.minWidth = "140px";
-            card.innerHTML = `
-              <img src="${posterUrl}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300.png?text=No+Image';">
-              <div class="card-body">
-                <h5 class="card-title" style="font-size:0.9rem;">${title}</h5>
-                <p class="card-text"><small>${year}</small></p>
-              </div>
-            `;
-            card.addEventListener("click", function () {
-              openDetailsPage(item.id, "movie");
-            });
-            container.appendChild(card);
+            container.appendChild(createMovieCard(item, "movie", {minWidth: "140px"}));
           });
         } catch (error) {
           console.error("Error loading upcoming movies:", error);
           container.innerHTML = `<div class='empty-state'>Error loading upcoming movies.</div>`;
         }
-        document.getElementById("upcomingLeftArrow").addEventListener("click", function() {
-          container.scrollBy({ left: -300, behavior: "smooth" });
-        });
-        document.getElementById("upcomingRightArrow").addEventListener("click", function() {
-          container.scrollBy({ left: 300, behavior: "smooth" });
-        });
       }
 
       function loadGenres() {
@@ -1289,25 +1194,7 @@
           container.innerHTML = "";
           const items = data.results.slice(0, 50);
           items.forEach(item => {
-            const title = item.title;
-            const date = item.release_date || "";
-            const year = date ? date.substring(0, 4) : "N/A";
-            const posterUrl = item.poster_path
-              ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-              : "https://via.placeholder.com/200x300.png?text=No+Image";
-            const card = document.createElement("div");
-            card.className = "search-card";
-            card.innerHTML = `
-              <img src="${posterUrl}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x300.png?text=No+Image';">
-              <div class="card-body">
-                <h5 class="card-title">${title}</h5>
-                <p class="card-text"><small>${year}</small></p>
-              </div>
-            `;
-            card.addEventListener("click", function () {
-              openDetailsPage(item.id, "movie");
-            });
-            container.appendChild(card);
+            container.appendChild(createMovieCard(item, "movie"));
           });
         } catch (error) {
           console.error("Error loading movies by genre:", error);
@@ -1345,8 +1232,8 @@
         document.getElementById("detailReleaseYear").innerText = releaseYear;
         let director = "N/A";
         if (details.credits && details.credits.crew) {
-          const directorObj = details.credits.crew.find(member => member.job === "Director")
-                          || details.credits.crew.find(member => member.job === "Executive Producer");
+          const directorObj = details.credits.crew.find(member => member.job === "Director") ||
+                              details.credits.crew.find(member => member.job === "Executive Producer");
           if (directorObj) director = directorObj.name;
         }
         document.getElementById("detailDirector").innerText = "Director: " + director;
@@ -1387,8 +1274,7 @@
           document.getElementById("tvSeriesInfoSection").style.display = "none";
         }
         document.getElementById("detailOverview").innerText = details.overview || "No description available.";
-        // Load cast information (up to 10 cast members)
-        if(details.credits && details.credits.cast && details.credits.cast.length > 0) {
+        if (details.credits && details.credits.cast && details.credits.cast.length > 0) {
           const castListEl = document.getElementById("castList");
           castListEl.innerHTML = "";
           details.credits.cast.slice(0, 10).forEach(castMember => {
@@ -1417,11 +1303,11 @@
           overview: details.overview || "",
           added: Date.now()
         };
-        if(mediaType === "movie") {
+        if (mediaType === "movie") {
           currentDetail.duration = details.runtime ? (details.runtime / 60).toFixed(1) : "N/A";
         }
         let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
-        if(mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)){
+        if (mediaList.find(m => m.id === currentDetail.id && m.media_type === currentDetail.media_type)){
           document.getElementById("addToWatchlistBtn").innerText = "Already in Watchlist";
           document.getElementById("addToWatchlistBtn").disabled = true;
         } else {
