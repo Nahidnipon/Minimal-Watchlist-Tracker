@@ -108,10 +108,9 @@
         background: var(--card-bg);
         transition: transform 0.2s, box-shadow 0.2s;
         cursor: pointer;
-        pointer-events: auto;
       }
       .search-card:hover {
-        transform: scale(1.05);
+        transform: scale(1.02);
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
       .search-card img {
@@ -178,22 +177,16 @@
       }
       .carousel-arrow.left { left: 0; }
       .carousel-arrow.right { right: 0; }
-      /* WATCHLIST / WATCHED CARDS – compact layout */
+      /* WATCHLIST / WATCHED CARDS – compact layout with custom buttons */
       .media-card {
         border: 1px solid #e1e4e8;
         border-radius: 8px;
         margin-bottom: 8px;
         overflow: hidden;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
         background: var(--card-bg);
         padding: 8px;
         position: relative;
-      }
-      .media-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       }
       .media-card img {
         width: 70px;
@@ -203,7 +196,6 @@
       }
       .media-card .card-body {
         padding: 4px;
-        position: relative;
       }
       .media-card .card-title {
         font-size: 0.95rem;
@@ -211,25 +203,52 @@
         font-weight: 500;
       }
       .media-card .card-text { font-size: 0.75rem; margin: 0; }
-      /* Delete and Done buttons placed at top‐right.
-         Note: Both event handlers call e.stopPropagation()
-         so clicks on these buttons won’t bubble up. */
-      .media-card .delete-btn, .media-card .done-btn {
-        position: absolute;
-        top: 4px;
-        background: none;
-        border: none;
-        font-size: 1.1rem;
-        opacity: 0.8;
-        cursor: pointer;
-        transition: transform 0.2s, opacity 0.3s;
-      }
-      .media-card .delete-btn { right: 4px; color: #e74c3c; }
-      .media-card .done-btn { right: 32px; color: var(--primary-color); }
-      .media-card .delete-btn:hover, .media-card .done-btn:hover {
-        opacity: 1;
-        transform: scale(1.1);
-      }
+      /* Card buttons (View, Rate, Trash) for watchlist and watched */
+      /* Updated Card Buttons for Watchlist and Watched Cards */
+.card-buttons {
+  position: absolute;
+  top: 8px;  /* Increased spacing from top */
+  right: 8px; /* Increased spacing from right */
+  display: flex;
+  gap: 6px;  /* Increased gap between buttons */
+}
+.card-buttons .btn {
+  padding: 2px 6px;
+  font-size: 0.8rem;
+  line-height: 1;
+  border-width: 1px;
+}
+
+/* View Button: Uses Lotus Garden accent #ADEBB3 */
+.card-buttons .view-btn {
+  border-color: #ADEBB3;
+  color: #ADEBB3;
+}
+.card-buttons .view-btn:hover {
+  background-color: #ADEBB3;
+  color: #ffffff;
+}
+
+/* Rate Button: Default uses #EBAEE6, hover turns to #FF857A */
+.card-buttons .rate-btn {
+  border-color: #EBAEE6;
+  color: #EBAEE6;
+}
+.card-buttons .rate-btn:hover {
+  background-color: #FF857A;
+  color: #ffffff;
+}
+
+/* Trash Button: Uses dark tone #6B403C */
+.card-buttons .trash-btn {
+  border-color: #6B403C;
+  color: #6B403C;
+}
+.card-buttons .trash-btn:hover {
+  background-color: #6B403C;
+  color: #ffffff;
+}
+
       /* PROFILE */
       .profile-card {
         position: relative;
@@ -355,6 +374,7 @@
       .tv-series-info-section label { margin-bottom: 5px; display: block; }
       /* Description Section */
       .details-description-section { margin-bottom: 20px; }
+      .details-description-section h3 { margin-bottom: 10px; }
       .detail-overview {
         font-size: 1rem;
         line-height: 1.5;
@@ -610,11 +630,11 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="ratingModalLabel">How was it? Rate this media!</h5>
+              <h5 class="modal-title" id="ratingModalLabel">Rate Your Viewing Experience</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-              <p class="mb-3">Select a star rating to share your experience:</p>
+              <p class="mb-3">Tell us how much you enjoyed this show/movie. Select a star rating.</p>
               <div id="starRating" style="font-size:2rem;">
                 <i class="far fa-star star" data-value="1"></i>
                 <i class="far fa-star star" data-value="2"></i>
@@ -624,7 +644,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" id="submitRatingBtn" class="btn btn-primary">Submit Rating</button>
+              <button type="button" id="submitRatingBtn" class="btn btn-primary"><i class="fas fa-star"></i> Submit Rating</button>
             </div>
           </div>
         </div>
@@ -661,6 +681,7 @@
           </div>
         </div>
         <div class="details-description-section">
+          <h3>Description</h3>
           <p id="detailOverview" class="detail-overview"></p>
         </div>
         <div class="details-cast">
@@ -691,7 +712,7 @@
     <script>
       const TMDB_API_KEY = "fa6ceab60f185619e0854acce9f0fcfd";
       let currentDetail = null;
-      let ratingTarget = null; // holds the media item that will be marked watched via rating popup
+      let ratingTarget = null; // holds the media item to be rated
       let selectedRating = 0;
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -885,7 +906,8 @@
                 <p class="card-text"><small>${year}</small></p>
               </div>
             `;
-            card.addEventListener("click", function () {
+            // Allow the entire card to be clickable in the Explore page.
+            card.addEventListener("click", function() {
               openDetailsPage(item.id, item.media_type);
             });
             container.appendChild(card);
@@ -898,7 +920,7 @@
           loadDetails(mediaType, id);
         }
 
-        // Render Watchlist cards
+        // Render Watchlist cards with three top-right buttons (non-clickable card body)
         function renderWatchlist() {
           mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
           const container = document.getElementById("watchlistContainer");
@@ -938,9 +960,13 @@
             const year = m.date ? m.date.substring(0, 4) : "N/A";
             const card = document.createElement("div");
             card.className = "card mb-2 media-card";
+            card.style.position = "relative";
             card.innerHTML = `
-              <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
-              <button class="btn btn-link done-btn"><i class="fas fa-check"></i></button>
+              <div class="card-buttons">
+                <button class="btn btn-sm btn-outline-primary view-btn" title="View"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-sm btn-outline-success rate-btn" title="Rate"><i class="fas fa-star"></i></button>
+                <button class="btn btn-sm btn-outline-danger trash-btn" title="Delete"><i class="fas fa-trash-alt"></i></button>
+              </div>
               <div class="row g-0">
                 <div class="col-auto">
                   <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:70px; height:105px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/70x105.png?text=No+Image';">
@@ -955,30 +981,32 @@
                 </div>
               </div>
             `;
-            // Click on card (outside icons) opens details.
-            card.addEventListener("click", function(){
+            // Button event listeners for watchlist
+            card.querySelector(".view-btn").addEventListener("click", function (e) {
+              e.stopPropagation();
               openDetailsPage(m.id, m.media_type);
             });
-            // Delete icon event prevention.
-            card.querySelector(".delete-btn").addEventListener("click", function (e) {
-              e.stopPropagation();
-              let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
-              updatedList = updatedList.filter(item => !(item.id === m.id && item.media_type === m.media_type));
-              localStorage.setItem("mediaList", JSON.stringify(updatedList));
-              renderWatchlist();
-            });
-            // Done icon event prevention.
-            card.querySelector(".done-btn").addEventListener("click", function(e) {
+            card.querySelector(".rate-btn").addEventListener("click", function (e) {
               e.stopPropagation();
               ratingTarget = m;
               let modal = new bootstrap.Modal(document.getElementById("ratingModal"));
               modal.show();
+            });
+            card.querySelector(".trash-btn").addEventListener("click", function (e) {
+              e.stopPropagation();
+              if(confirm("Are you sure you want to delete this item?")) {
+                let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
+                updatedList = updatedList.filter(item => !(item.id === m.id && item.media_type === m.media_type));
+                localStorage.setItem("mediaList", JSON.stringify(updatedList));
+                renderWatchlist();
+              }
             });
             container.appendChild(card);
           });
         }
         window.renderWatchlist = renderWatchlist;
 
+        // Render Watched cards with three top-right buttons (non-clickable card body)
         function renderWatched() {
           mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
           const container = document.getElementById("watchedContainer");
@@ -1018,8 +1046,13 @@
             const year = m.date ? m.date.substring(0, 4) : "N/A";
             const card = document.createElement("div");
             card.className = "card mb-2 media-card";
+            card.style.position = "relative";
             card.innerHTML = `
-              <button class="btn btn-link delete-btn"><i class="fas fa-trash-alt"></i></button>
+              <div class="card-buttons">
+                <button class="btn btn-sm btn-outline-primary view-btn" title="View"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-sm btn-outline-success rate-btn" title="Rate"><i class="fas fa-star"></i></button>
+                <button class="btn btn-sm btn-outline-danger trash-btn" title="Delete"><i class="fas fa-trash-alt"></i></button>
+              </div>
               <div class="row g-0">
                 <div class="col-auto">
                   <img src="${m.poster}" alt="${m.title}" class="img-fluid" style="width:70px; height:105px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/70x105.png?text=No+Image';">
@@ -1035,17 +1068,25 @@
                 </div>
               </div>
             `;
-            // Card click opens details.
-            card.addEventListener("click", function(){
+            // Button event listeners for watched list
+            card.querySelector(".view-btn").addEventListener("click", function (e) {
+              e.stopPropagation();
               openDetailsPage(m.id, m.media_type);
             });
-            // Delete icon in watched card.
-            card.querySelector(".delete-btn").addEventListener("click", function (e) {
+            card.querySelector(".rate-btn").addEventListener("click", function (e) {
               e.stopPropagation();
-              let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
-              updatedList = updatedList.filter(item => !(item.id === m.id && item.media_type === m.media_type));
-              localStorage.setItem("mediaList", JSON.stringify(updatedList));
-              renderWatched();
+              ratingTarget = m;
+              let modal = new bootstrap.Modal(document.getElementById("ratingModal"));
+              modal.show();
+            });
+            card.querySelector(".trash-btn").addEventListener("click", function (e) {
+              e.stopPropagation();
+              if(confirm("Are you sure you want to delete this item?")) {
+                let updatedList = JSON.parse(localStorage.getItem("mediaList")) || [];
+                updatedList = updatedList.filter(item => !(item.id === m.id && item.media_type === m.media_type));
+                localStorage.setItem("mediaList", JSON.stringify(updatedList));
+                renderWatched();
+              }
             });
             container.appendChild(card);
           });
@@ -1346,6 +1387,22 @@
           document.getElementById("tvSeriesInfoSection").style.display = "none";
         }
         document.getElementById("detailOverview").innerText = details.overview || "No description available.";
+        // Load cast information (up to 10 cast members)
+        if(details.credits && details.credits.cast && details.credits.cast.length > 0) {
+          const castListEl = document.getElementById("castList");
+          castListEl.innerHTML = "";
+          details.credits.cast.slice(0, 10).forEach(castMember => {
+             const castItem = document.createElement("div");
+             castItem.className = "cast-item";
+             const profileImg = castMember.profile_path 
+                 ? `https://image.tmdb.org/t/p/w200${castMember.profile_path}` 
+                 : "https://via.placeholder.com/60x60.png?text=No+Image";
+             castItem.innerHTML = `<img src="${profileImg}" alt="${castMember.name}" onerror="this.src='https://via.placeholder.com/60x60.png?text=No+Image';"><br>${castMember.name}`;
+             castListEl.appendChild(castItem);
+          });
+        } else {
+          document.getElementById("castList").innerHTML = "<p>No cast information available.</p>";
+        }
         const posterUrl = details.poster_path
           ? `https://image.tmdb.org/t/p/w300${details.poster_path}`
           : "https://via.placeholder.com/300x450.png?text=No+Image";
