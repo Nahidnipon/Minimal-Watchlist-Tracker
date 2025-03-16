@@ -42,6 +42,7 @@
       border-radius: 8px;
       margin-top: 20px;
     }
+    /* HEADER COMPONENT */
     .app-header {
       display: flex;
       justify-content: space-between;
@@ -203,7 +204,7 @@
       color: #555;
       margin-top: 10px;
     }
-    /* ------------------ DETAILS VIEW (Overlay) ------------------ */
+    /* ------------------ CONTENT PAGE COMPONENT (Detailed Media View) ------------------ */
     #detailsApp {
       position: fixed;
       top: 0;
@@ -302,7 +303,7 @@
       object-fit: cover;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    /* ------------------ FIXED BOTTOM NAVIGATION ------------------ */
+    /* ------------------ NAVIGATION COMPONENT ------------------ */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -351,7 +352,7 @@
 
   <!-- MAIN APP VIEW -->
   <div id="mainApp" class="app-container">
-    <!-- Header -->
+    <!-- HEADER COMPONENT -->
     <header class="app-header">
       <h2 id="currentTabTitle">Search</h2>
       <div id="profileContainer" class="profile-container">
@@ -361,9 +362,17 @@
         </div>
       </div>
     </header>
-    <!-- Content -->
+    <!-- CONTENT AREA -->
     <main class="app-content">
-      <!-- Watchlist Tab -->
+      <!-- SEARCH COMPONENT -->
+      <div id="search" class="tab active-tab">
+        <div class="search-group input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series...">
+        </div>
+        <div id="searchResults"></div>
+      </div>
+      <!-- WATCHLIST COMPONENT -->
       <div id="watchlist" class="tab">
         <div class="d-flex justify-content-end mb-3">
           <select id="watchlistSort" class="form-select form-select-sm" style="width: auto;">
@@ -374,15 +383,7 @@
         </div>
         <div id="watchlistContainer"></div>
       </div>
-      <!-- Search Tab -->
-      <div id="search" class="tab active-tab">
-        <div class="search-group input-group">
-          <span class="input-group-text"><i class="fas fa-search"></i></span>
-          <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series...">
-        </div>
-        <div id="searchResults"></div>
-      </div>
-      <!-- Watched Tab -->
+      <!-- WATCHED COMPONENT -->
       <div id="watched" class="tab">
         <div class="d-flex justify-content-end mb-3">
           <select id="watchedSort" class="form-select form-select-sm" style="width: auto;">
@@ -393,7 +394,7 @@
         </div>
         <div id="watchedContainer"></div>
       </div>
-      <!-- Profile Tab -->
+      <!-- PROFILE COMPONENT -->
       <div id="profile" class="tab">
         <div class="profile-card">
           <button type="button" class="btn btn-link edit-icon" id="profileEditBtn" data-bs-toggle="modal" data-bs-target="#profileModal">
@@ -459,7 +460,7 @@
       </div>
     </div>
   </div>
-  <!-- DETAILS VIEW (Overlay) -->
+  <!-- CONTENT PAGE COMPONENT (Detailed Media View) -->
   <div id="detailsApp">
     <div class="details-container">
       <div class="details-header">
@@ -485,7 +486,7 @@
       </div>
     </div>
   </div>
-  <!-- FIXED BOTTOM NAVIGATION -->
+  <!-- NAVIGATION COMPONENT -->
   <nav class="bottom-nav">
     <button type="button" class="nav-btn" data-tab="watchlist" title="Watchlist">
       <i class="fas fa-bookmark"></i>
