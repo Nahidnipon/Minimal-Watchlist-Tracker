@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Media Watchlist</title>
+  <title>Media Watchlist - Lotus Garden</title>
 
   <!-- Google Fonts: Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -13,12 +13,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <style>
+    /* Updated Color Palette for Lotus Garden Theme */
     :root {
-      --primary-color: #1abc9c;
-      --primary-hover: #17a589;
-      --secondary-color: #333;
+      --primary-color: #FF857A;       /* vibrant button background */
+      --primary-hover: #EBAEE6;         /* hover state */
+      --secondary-color: #6B403C;       /* text/icon accent */
+      --accent-color: #ADEBB3;          /* accent for borders, highlights */
       --bg-color: #f0f2f5;
-      --card-bg: #fff;
+      --card-bg: #ffffff;
       --text-color: #333;
     }
     /* Base reset and font */
@@ -91,6 +93,14 @@
     /* SEARCH COMPONENT */
     .search-group {
       margin-bottom: 1rem;
+    }
+    .search-group .input-group > *:not(:last-child) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .search-group .input-group > *:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
     }
     #searchResults {
       display: grid;
@@ -268,7 +278,7 @@
     }
     .btn-add-watchlist {
       background-color: var(--primary-color);
-      color: #fff;
+      color: var(--secondary-color);
       padding: 12px;
       border-radius: 8px;
       font-size: 1rem;
@@ -304,7 +314,7 @@
     }
     .details-rating-section button {
       background-color: var(--primary-color);
-      color: #fff;
+      color: var(--secondary-color);
       padding: 12px;
       border-radius: 8px;
       font-size: 1rem;
@@ -385,7 +395,9 @@
       color: #777;
     }
     .empty-state img {
-      max-width: 400px;
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
       margin-bottom: 20px;
     }
     /* ------------------ NAVIGATION COMPONENT ------------------ */
@@ -442,9 +454,9 @@
     <header class="app-header">
       <h2 id="currentTabTitle">Search</h2>
       <div id="profileContainer" class="profile-container">
-        <span id="profileName" class="d-none d-sm-inline">Default Name</span>
+        <span id="profileName" class="d-none d-sm-inline">John Doe</span>
         <div id="profileImageContainer">
-          <img id="profileImage" src="https://via.placeholder.com/40" alt="Profile" loading="lazy">
+          <img id="profileImage" src="https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg" alt="Profile" loading="lazy">
         </div>
       </div>
     </header>
@@ -453,8 +465,9 @@
     <main class="app-content">
       <!-- WATCHLIST TAB -->
       <div id="watchlist" class="tab">
-        <div id="watchlistFilters" class="d-flex justify-content-end mb-3">
-          <select id="watchlistSort" class="form-select form-select-sm" style="width: auto;">
+        <div id="watchlistControls" class="d-flex justify-content-between align-items-center mb-3">
+          <input type="text" id="watchlistSearch" class="form-control form-control-sm" placeholder="Search watchlist..." style="width: 70%;">
+          <select id="watchlistSort" class="form-select form-select-sm" style="width: 28%;">
             <option value="release_new">Release Date: Newest First</option>
             <option value="release_old">Release Date: Oldest First</option>
             <option value="recent">Recently Added</option>
@@ -466,14 +479,20 @@
       <div id="search" class="tab active-tab">
         <div class="search-group input-group">
           <span class="input-group-text"><i class="fas fa-search"></i></span>
-          <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series...">
+          <input type="text" id="searchQuery" class="form-control" placeholder="Search movies or series..." style="width: 70%;">
+          <select id="searchMediaType" class="form-select" style="width: 28%;">
+            <option value="all">All</option>
+            <option value="movie">Movies</option>
+            <option value="tv">TV Series</option>
+          </select>
         </div>
         <div id="searchResults"></div>
       </div>
       <!-- WATCHED TAB -->
       <div id="watched" class="tab">
-        <div id="watchedFilters" class="d-flex justify-content-end mb-3">
-          <select id="watchedSort" class="form-select form-select-sm" style="width: auto;">
+        <div id="watchedControls" class="d-flex justify-content-between align-items-center mb-3">
+          <input type="text" id="watchedSearch" class="form-control form-control-sm" placeholder="Search watched..." style="width: 70%;">
+          <select id="watchedSort" class="form-select form-select-sm" style="width: 28%;">
             <option value="release_new">Release Date: Newest First</option>
             <option value="release_old">Release Date: Oldest First</option>
             <option value="recent">Recently Added</option>
@@ -488,9 +507,9 @@
             <i class="fas fa-pencil-alt"></i>
           </button>
           <div class="profile-img">
-            <img id="profileCardImage" src="https://via.placeholder.com/100" alt="Profile" loading="lazy">
+            <img id="profileCardImage" src="https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg" alt="Profile" loading="lazy">
           </div>
-          <h4 class="profile-name" id="profileCardName">Default Name</h4>
+          <h4 class="profile-name" id="profileCardName">John Doe</h4>
           <p class="profile-stats" id="profileStats">
             Watched: 0 | Watchlisted: 0 | Watch Hours: 0h | Satisfaction: 0
           </p>
@@ -528,7 +547,7 @@
     </div>
   </div>
 
-  <!-- DETAILS PAGE COMPONENT (Banner Removed) -->
+  <!-- DETAILS PAGE COMPONENT -->
   <div id="detailsApp">
     <div class="details-container">
       <!-- Header: Poster & Basic Info -->
@@ -542,7 +561,7 @@
           <p id="detailDirector" class="detail-director"></p>
         </div>
       </div>
-      <!-- Add to Watchlist / Rating Section -->
+      <!-- Watchlist/Rating Section -->
       <div id="detailsActions" class="text-center">
         <button class="btn-add-watchlist" id="addToWatchlistBtn">
           <i class="fas fa-plus"></i> Add to Watchlist
@@ -653,8 +672,8 @@
       let mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
       let activityLog = JSON.parse(localStorage.getItem("activityLog")) || [];
       let userProfile = JSON.parse(localStorage.getItem("userProfile")) || {
-        name: "Default Name",
-        image: "https://via.placeholder.com/40"
+        name: "John Doe",
+        image: "https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg"
       };
 
       window.renderProfile = function() {
@@ -695,7 +714,7 @@
         }
       });
       document.getElementById("saveProfileBtn").addEventListener("click", function () {
-        const newName = document.getElementById("editName").value || "Default Name";
+        const newName = document.getElementById("editName").value || "John Doe";
         userProfile.name = newName;
         const fileInput = document.getElementById("editImage");
         if (fileInput.files[0]) {
@@ -727,7 +746,12 @@
           if (!response.ok) throw new Error("Network response was not ok");
           const data = await response.json();
           if (data.results && Array.isArray(data.results)) {
-            renderSearchResults(data.results);
+            const mediaTypeFilter = document.getElementById("searchMediaType").value;
+            let results = data.results;
+            if (mediaTypeFilter !== "all") {
+              results = results.filter(item => item.media_type === mediaTypeFilter);
+            }
+            renderSearchResults(results);
           } else {
             resultsContainer.innerHTML = `
               <div class='empty-state'>
@@ -775,6 +799,12 @@
         });
       }
 
+      // Re-trigger search when media type filter changes
+      document.getElementById("searchMediaType").addEventListener("change", function(){
+        const query = document.getElementById("searchQuery").value.trim();
+        if(query) performSearch(query);
+      });
+
       function openDetailsPage(id, mediaType) {
         history.pushState({}, "", `?media_type=${mediaType}&id=${id}`);
         document.getElementById("detailsApp").style.display = "block";
@@ -784,20 +814,24 @@
       function renderWatchlist() {
         mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const container = document.getElementById("watchlistContainer");
-        const filters = document.getElementById("watchlistFilters");
+        const controls = document.getElementById("watchlistControls");
         let list = mediaList.filter(m => !m.watched);
+        const searchQuery = document.getElementById("watchlistSearch")?.value.toLowerCase();
+        if (searchQuery) {
+          list = list.filter(m => m.title.toLowerCase().includes(searchQuery));
+        }
         if (list.length === 0) {
-          filters.style.display = "none";
+          controls.style.display = "none";
           container.innerHTML = `
             <div class='empty-state'>
-              <img src='https://img.freepik.com/free-vector/open-air-cinema_23-2148644732.jpg?t=st=1742117585~exp=1742121185~hmac=c513ea492b7e3ae44d3cb7b4f7f9682109891a8f07f77d005d94a54b82636bc7&w=996'
+              <img src='https://img.freepik.com/free-vector/open-air-cinema_23-2148644732.jpg?w=996'
                    alt='Empty'>
               <br>Your watchlist is empty. Add some media!
             </div>
           `;
           return;
         } else {
-          filters.style.display = "flex";
+          controls.style.display = "flex";
         }
         const sortOrder = document.getElementById("watchlistSort").value || "release_new";
         list.sort((a, b) => {
@@ -853,20 +887,24 @@
       function renderWatched() {
         mediaList = JSON.parse(localStorage.getItem("mediaList")) || [];
         const container = document.getElementById("watchedContainer");
-        const filters = document.getElementById("watchedFilters");
+        const controls = document.getElementById("watchedControls");
         let list = mediaList.filter(m => m.watched);
+        const searchQuery = document.getElementById("watchedSearch")?.value.toLowerCase();
+        if (searchQuery) {
+          list = list.filter(m => m.title.toLowerCase().includes(searchQuery));
+        }
         if (list.length === 0) {
-          filters.style.display = "none";
+          controls.style.display = "none";
           container.innerHTML = `
             <div class='empty-state'>
-              <img src='https://img.freepik.com/free-vector/hand-drawn-movie-theater-drawing-illustration_23-2151023043.jpg?t=st=1742117582~exp=1742121182~hmac=1f25fce97fa62c661472e2b8a0c29d0a51644115d62b51510a679dbce4d6b121&w=740'
+              <img src='https://img.freepik.com/free-vector/hand-drawn-movie-theater-drawing-illustration_23-2151023043.jpg?w=740'
                    alt='Empty'>
               <br>No watched items yet. Time for a movie marathon!
             </div>
           `;
           return;
         } else {
-          filters.style.display = "flex";
+          controls.style.display = "flex";
         }
         const sortOrder = document.getElementById("watchedSort").value || "release_new";
         list.sort((a, b) => {
@@ -932,6 +970,8 @@
         if (query) performSearch(query);
         else document.getElementById("searchResults").innerHTML = "";
       }, 500));
+      document.getElementById("watchlistSearch").addEventListener("keyup", debounce(renderWatchlist, 500));
+      document.getElementById("watchedSearch").addEventListener("keyup", debounce(renderWatched, 500));
       document.getElementById("watchlistSort").addEventListener("change", renderWatchlist);
       document.getElementById("watchedSort").addEventListener("change", renderWatched);
       renderWatchlist();
